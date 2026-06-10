@@ -565,7 +565,9 @@ function readFilterInputsToState() {
     window.appState.filters.phase = document.getElementById('fPhase').value;
     
     let chosenSort = document.getElementById('dbSort').value;
-    window.appState.filters.sort = chosenSort ? chosenSort : 'e_change DESC';
+    // VERY STRICT SORT VALIDATION (Prevents URL SQL injection crashing the app)
+    const validSorts = ['e_change DESC', 'clock_sec ASC', 'm_number ASC', 'year DESC, m_number ASC'];
+    window.appState.filters.sort = validSorts.includes(chosenSort) ? chosenSort : 'e_change DESC';
 }
 
 function generateSQLFilterClause() {
@@ -573,7 +575,13 @@ function generateSQLFilterClause() {
     let f = window.appState.filters;
 
     if (f.type && f.type !== 'all') rules.push(`error_type = '${f.type}'`);
-    if (f.year && f.year !== 'all') rules.push(`TRY_CAST(year AS INTEGER) = ${parseInt(f.year)}`);
+    
+    // STRICT NUMBER VALIDATION: Solves the "NaN" database crash
+    if (f.year && f.year !== 'all') {
+        let yr = parseInt(f.year);
+        if (!isNaN(yr)) rules.push(`TRY_CAST(year AS INTEGER) = ${yr}`);
+    }
+    
     if (f.phase && f.phase !== 'all') rules.push(`opening_phase = '${f.phase}'`);
     if (f.side && f.side !== 'all') rules.push(`side = '${f.side}'`);
     
@@ -582,24 +590,31 @@ function generateSQLFilterClause() {
         else rules.push(`player_title = '${f.title}'`);
     }
     
-    if (f.minElo && parseInt(f.minElo) > 0) rules.push(`p_elo >= ${parseInt(f.minElo)}`);
-    if (f.maxElo && parseInt(f.maxElo) < 4000) rules.push(`p_elo <= ${parseInt(f.maxElo)}`);
-    if (f.minDrop && parseFloat(f.minDrop) > 0) rules.push(`e_change >= ${parseFloat(f.minDrop)}`);
+    // STRICT NUMBER VALIDATION
+    let mElo = parseInt(f.minElo);
+    if (!isNaN(mElo) && mElo > 0) rules.push(`p_elo >= ${mElo}`);
+    
+    let xElo = parseInt(f.maxElo);
+    if (!isNaN(xElo) && xElo < 4000) rules.push(`p_elo <= ${xElo}`);
+    
+    let mDrop = parseFloat(f.minDrop);
+    if (!isNaN(mDrop) && mDrop > 0) rules.push(`e_change >= ${mDrop}`);
     
     if (f.criticalOnly) {
         rules.push(`is_critical = true`);
     }
     
+    // DOUBLE ESCAPE BACKSLASHES: Prevents LIKE clause syntax crashes
     if (f.open) {
-        let s = f.open.toLowerCase().replace(/'/g, "''");
+        let s = f.open.toLowerCase().replace(/'/g, "''").replace(/\\/g, "\\\\");
         rules.push(`(LOWER(eco) LIKE '%${s}%' OR LOWER(opening) LIKE '%${s}%')`);
     }
     if (f.player) {
-        let s = f.player.toLowerCase().replace(/'/g, "''");
+        let s = f.player.toLowerCase().replace(/'/g, "''").replace(/\\/g, "\\\\");
         rules.push(`LOWER(player) LIKE '%${s}%'`);
     }
     if (f.event) {
-        let s = f.event.toLowerCase().replace(/'/g, "''");
+        let s = f.event.toLowerCase().replace(/'/g, "''").replace(/\\/g, "\\\\");
         rules.push(`LOWER(event) LIKE '%${s}%'`);
     }
 
