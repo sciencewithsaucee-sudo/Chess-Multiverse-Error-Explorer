@@ -380,8 +380,7 @@
             </div>
         </div>
     </div>
-
-    <div id="tab-methodology" class="tab-pane">
+<div id="tab-methodology" class="tab-pane">
         <button class="back-to-hub" onclick="switchTab('home')"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
         
         <div style="max-width: 1000px; margin: 0 auto;">
@@ -432,43 +431,42 @@
                 
                 <p style="line-height: 1.6; color: var(--color-text-body); font-size: 0.95rem; margin-bottom:0;">This allows researchers to profile which players maintain cognitive stability under extreme time distress and which openings induce the highest rate of clock-management failure.</p>
             </div>
-<div class="chart-container" style="margin-bottom: 25px; padding: 30px; border: 1px solid var(--color-border); background: var(--color-bg-white); box-shadow: var(--shadow-md);">
-                <h3 style="color:var(--color-primary); border-bottom: 2px solid var(--color-border); padding-bottom: 10px; margin-top:0;">4. Reproducible Reference Analysis (Tutorial)</h3>
-                <p style="line-height: 1.6; color: var(--color-text-body); font-size: 0.95rem; margin-bottom: 20px;">CMEED is designed for strict empirical reproducibility. The following case study demonstrates how a researcher can utilize the Error Explorer and DuckDB query engine to rapidly validate a behavioral hypothesis regarding elite cognitive degradation.</p>
 
-                <div style="background: #fffbeb; border-left: 4px solid var(--color-warning); padding: 15px 20px; margin-bottom: 25px; border-radius: 0 var(--radius-md) var(--radius-md) 0;">
-                    <b style="color: #b45309; font-size: 1.05rem; display: block; margin-bottom: 5px;">Hypothesis (H1):</b>
+            <div class="chart-container" style="margin-bottom: 25px; padding: 30px; border: 1px solid var(--color-border); background: var(--color-bg-white); box-shadow: var(--shadow-md);">
+                <h3 style="color:var(--color-primary); border-bottom: 2px solid var(--color-border); padding-bottom: 10px; margin-top:0;">4. Reproducible Reference Analysis (Tutorials)</h3>
+                <p style="line-height: 1.6; color: var(--color-text-body); font-size: 0.95rem; margin-bottom: 25px;">CMEED is designed for strict empirical reproducibility. The following case studies demonstrate how a researcher can utilize the Error Explorer and DuckDB query engine to rapidly validate behavioral hypotheses regarding elite cognitive degradation.</p>
+
+                <div style="background: #fffbeb; border-left: 4px solid var(--color-warning); padding: 15px 20px; margin-bottom: 15px; border-radius: 0 var(--radius-md) var(--radius-md) 0;">
+                    <b style="color: #b45309; font-size: 1.05rem; display: block; margin-bottom: 5px;">Case Study 1: Opening Hypothesis</b>
                     <span style="color: var(--color-text-dark); line-height: 1.5; font-size: 0.95rem;">Elite Grandmaster (GM) blunder rates in complex hypermodern openings (e.g., Nimzo-Indian Defense) undergo a statistically significant non-linear increase when the clock parameter drops strictly below 30 seconds.</span>
                 </div>
+                <div style="display: flex; gap: 12px; margin-bottom: 35px; flex-wrap: wrap;">
+                    <button class="btn btn-warning" style="background:#f59e0b; color:#fff; border:none;" onclick="runNimzoTutorial()"><i class="fa-solid fa-play"></i> Auto-Run Nimzo Test</button>
+                    <button class="btn" onclick="extractTutorialDataset('nimzo')"><i class="fa-solid fa-file-csv"></i> Extract Validation (.CSV)</button>
+                </div>
 
-                <h4 style="color:var(--color-text-dark); margin-bottom: 10px; font-size: 1.1rem;">Experimental Protocol</h4>
-                <ol style="line-height: 1.8; color: var(--color-text-body); font-size: 0.95rem; margin-top: 0; padding-left: 20px; margin-bottom: 25px;">
-                    <li>Navigate to the <b>Error Explorer</b> portal.</li>
-                    <li>Set the <b>Title</b> parameter to <code>GM</code> to isolate elite over-the-board play.</li>
-                    <li>Set the <b>Opening Family</b> search filter to <code>Nimzo-Indian</code> (ECO: E20-E59).</li>
-                    <li>Set the <b>Clock Metrics</b> parameter to <code>15m+</code> to establish a baseline <i>Expected Score Loss (ESL)</i> and Blunder severity ratio.</li>
-                    <li>Change the <b>Clock Metrics</b> parameter to <code>&lt; 30 seconds</code> (to simulate \(t < 30s\) panic conditions) and observe the delta in the resultant output matrix.</li>
-                </ol>
-
-                <h4 style="color:var(--color-text-dark); margin-bottom: 10px; font-size: 1.1rem;">Expected Verification Output</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px dashed var(--color-border);">
                     <div style="border: 1px solid var(--color-border); padding: 20px; border-radius: var(--radius-md); text-align: center; background: var(--color-bg-light);">
                         <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--color-text-light); letter-spacing: 0.5px;">Baseline (15m+) Blunder Rate</div>
-                        <div style="font-family: var(--font-mono); font-size: 2rem; font-weight: 800; color: var(--color-text-dark); margin-top: 8px;">~ 2.8%</div>
+                        <div id="tutBaselineRate" style="font-family: var(--font-mono); font-size: 2rem; font-weight: 800; color: var(--color-text-dark); margin-top: 8px;">-- %</div>
                     </div>
                     <div style="border: 1px solid #fca5a5; background: #fef2f2; padding: 20px; border-radius: var(--radius-md); text-align: center;">
                         <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--color-danger); letter-spacing: 0.5px;">Panic (&lt; 30s) Blunder Rate</div>
-                        <div style="font-family: var(--font-mono); font-size: 2rem; font-weight: 800; color: var(--color-danger); margin-top: 8px;">~ 14.2%</div>
+                        <div id="tutPanicRate" style="font-family: var(--font-mono); font-size: 2rem; font-weight: 800; color: var(--color-danger); margin-top: 8px;">-- %</div>
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap;">
-                    <button class="btn btn-primary" onclick="runNimzoTutorial()"><i class="fa-solid fa-play"></i> Auto-Run Hypothesis Test</button>
-                    <button class="btn" onclick="extractNimzoDataset()"><i class="fa-solid fa-file-csv"></i> Extract Validation Dataset (.CSV)</button>
+                <div style="background: #f0fdf4; border-left: 4px solid var(--color-success); padding: 15px 20px; margin-bottom: 15px; border-radius: 0 var(--radius-md) var(--radius-md) 0;">
+                    <b style="color: #166534; font-size: 1.05rem; display: block; margin-bottom: 5px;">Case Study 2: Player Profile Hypothesis</b>
+                    <span style="color: var(--color-text-dark); line-height: 1.5; font-size: 0.95rem;">Magnus Carlsen demonstrates a measurable vulnerability to catastrophic evaluation loss (Drop > 2.0 ELO) explicitly when defending as Black in severe time trouble (&lt; 60 seconds), contrary to his overall statistical dominance.</span>
+                </div>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button class="btn btn-success" style="background:#10b981; color:#fff; border:none;" onclick="runCarlsenTutorial()"><i class="fa-solid fa-play"></i> Auto-Run Carlsen Test</button>
+                    <button class="btn" onclick="extractTutorialDataset('carlsen')"><i class="fa-solid fa-file-csv"></i> Extract Validation (.CSV)</button>
                 </div>
             </div>
-                        
-<div class="chart-container" style="margin-bottom: 25px; padding: 30px; border-left: 4px solid var(--color-primary);">
+
+            <div class="chart-container" style="margin-bottom: 25px; padding: 30px; border-left: 4px solid var(--color-primary);">
                 <h3 style="margin:0 0 15px; color:var(--color-text-dark); font-size: 1.3rem;"><i class="fa-solid fa-quote-right" style="color:var(--color-primary); margin-right:8px;"></i>Academic Citations</h3>
                 <p style="line-height: 1.6; color: var(--color-text-body); font-size: 0.95rem; margin-bottom: 20px;">This project yields two distinct academic outputs. Depending on your use case, please cite the dataset, the software, or both:</p>
                 
@@ -576,6 +574,22 @@
 
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="alertBackdrop" onclick="if(event.target === this) closeAlertModal()">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <div>
+                    <h3 style="margin:0; font-size:1.2rem; color:var(--color-text-dark);"><i class="fa-solid fa-circle-check" style="color:var(--color-success); margin-right:8px;"></i>Case Study Verified</h3>
+                </div>
+                <button class="btn btn-xs" onclick="closeAlertModal()"><i class="fa-solid fa-xmark" style="font-size:1.2rem;"></i></button>
+            </div>
+            <div class="modal-body" id="alertBody" style="font-size: 0.95rem; color: var(--color-text-body); line-height: 1.6;">
+                </div>
+            <div style="padding: 1.5rem; border-top: 1px solid var(--color-border); display: flex; justify-content: flex-end;">
+                <button class="btn btn-primary" onclick="closeAlertModal()">Acknowledge & View Data</button>
             </div>
         </div>
     </div>
