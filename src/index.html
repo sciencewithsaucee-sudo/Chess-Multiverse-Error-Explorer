@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMEED - Human Decision Error Explorer</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+</head>
+<body>
+
+<datalist id="playerList"></datalist>
+<datalist id="eventList"></datalist>
+<datalist id="ecoList"></datalist>
+
+<div id="cmeedLoader">
+    <i class="fa-solid fa-spinner"></i> <span id="loaderMsg">Initializing SQL Environment...</span>
+</div>
+
+<div id="cmeedApp">
+
+    <div id="tab-home" class="tab-pane active">
+        <div class="hero-section">
+            <div style="font-family:var(--font-mono); color:var(--color-danger); font-weight:700; letter-spacing:1px; margin-bottom:15px; display:flex; justify-content:center; align-items:center; gap:8px;">
+                <i class="fa-solid fa-database"></i> POWERED BY CMEED V1.0
+            </div>
+            <h1 class="hero-title">Chess Multiverse<br>Error Explorer.</h1>
+            <p class="hero-subtitle">The definitive research platform for analyzing human decision errors, time pressure blunders, and opening complexities across elite chess.</p>
+            
+            <div class="dashboard-stats-row" style="max-width: 900px; margin: 0 auto 50px;">
+                <div class="dash-stat">
+                    <div class="dash-stat-title">Errors Mapped</div>
+                    <div class="dash-stat-val" id="homeStatErrors">--</div>
+                    <div class="dash-stat-sub">Human decision points</div>
+                </div>
+                <div class="dash-stat">
+                    <div class="dash-stat-title">Broadcast Games</div>
+                    <div class="dash-stat-val" id="homeStatGames">--</div>
+                    <div class="dash-stat-sub">Dataset volume</div>
+                </div>
+                <div class="dash-stat">
+                    <div class="dash-stat-title">Data Vintage</div>
+                    <div class="dash-stat-val" id="homeVintage">2026</div>
+                    <div class="dash-stat-sub">Timeframe</div>
+                </div>
+            </div>
+
+            <div class="portal-grid">
+                <div class="portal-card" onclick="switchTab('explorer')">
+                    <div class="portal-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+                    <h3>Error Explorer</h3>
+                    <p>Filter deep into critical blunders, inaccuracies, and time-pressure collapses.</p>
+                </div>
+                <div class="portal-card" onclick="switchTab('atlas')">
+                    <div class="portal-icon"><i class="fa-solid fa-book-open"></i></div>
+                    <h3>Opening Atlas</h3>
+                    <p>Discover which opening systems produce the highest rate of catastrophic errors.</p>
+                </div>
+                <div class="portal-card" onclick="switchTab('events')">
+                    <div class="portal-icon"><i class="fa-solid fa-trophy"></i></div>
+                    <h3>Event Explorer</h3>
+                    <p>Analyze tournament-level macro statistics and evaluation loss aggregates.</p>
+                </div>
+                <div class="portal-card" onclick="switchTab('players')">
+                    <div class="portal-icon"><i class="fa-solid fa-users-viewfinder"></i></div>
+                    <h3>Player Profiles</h3>
+                    <p>Investigate individual player vulnerability profiles and opening weaknesses.</p>
+                </div>
+                <div class="portal-card" onclick="switchTab('dashboard')">
+                    <div class="portal-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    <h3>Research Dashboard</h3>
+                    <p>Statistical visualizations natively rendered via DuckDB SQL aggregations.</p>
+                </div>
+                <div class="portal-card" onclick="switchTab('methodology')">
+                    <div class="portal-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+                    <h3>Methodology</h3>
+                    <p>Explore the mathematics and derivation layers behind CMEED v1.0 metrics.</p>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap; margin-top:30px;">
+                <button class="btn btn-primary" onclick="switchTab('explorer')"><i class="fa-solid fa-play"></i> Launch Explorer</button>
+                <button class="btn" onclick="copyShareLink()"><i class="fa-solid fa-link"></i> Share Current View</button>
+                <a href="https://raw.githubusercontent.com/sciencewithsaucee-sudo/Chess-Multiverse-Error-Evaluation-Dataset-CMEED-/main/cmeed_v1.parquet" download="cmeed_v1.parquet" class="btn"><i class="fa-solid fa-file-arrow-down"></i> Download Parquet (58MB)</a>
+            </div>
+            
+        </div>
+    </div>
+
+    <div id="tab-explorer" class="tab-pane">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px;">
+            <button class="back-to-hub" style="margin:0;" onclick="switchTab('home')"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+            <button class="btn btn-primary desktop-hide" id="mobileFilterToggle" onclick="openMobileFilter()">
+                <i class="fa-solid fa-sliders"></i> Filter Errors
+            </button>
+        </div>
+        
+        <div class="explorer-layout">
+            <aside class="sidebar">
+                <div class="mobile-filter-header">
+                    <h3 style="margin:0; font-size:1.1rem; font-weight:700; color:var(--color-text-dark);">Refine Dataset</h3>
+                    <button class="btn btn-xs" onclick="closeMobileFilter()" style="background:transparent; border:none; font-size:1.3rem; padding:0; color:var(--color-text-light);"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <div class="filter-body">
+                    <div class="filter-group">
+                        <div class="filter-section-title">Error Severity</div>
+                        <div class="btn-grid" style="grid-template-columns: repeat(4, 1fr);">
+                            <button class="btn btn-xs btn-check active" id="fTypeAll" onclick="setFilter('type','all')">All</button>
+                            <button class="btn btn-xs btn-check" id="fTypeBlunder" onclick="setFilter('type','Blunder')">Blun.</button>
+                            <button class="btn btn-xs btn-check" id="fTypeMistake" onclick="setFilter('type','Mistake')">Mist.</button>
+                            <button class="btn btn-xs btn-check" id="fTypeInaccuracy" onclick="setFilter('type','Inaccuracy')">Inac.</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <button class="btn w-100" id="btnCritical" onclick="toggleCritical()"><i class="fa-solid fa-bolt"></i> Critical Moments Only</button>
+                    </div>
+
+                    <div class="filter-group">
+                        <div class="filter-section-title">Evaluation Magnitude</div>
+                        <select id="fMinDrop" class="form-control" onchange="debounceFilter()">
+                            <option value="0">Any Evaluation Drop</option>
+                            <option value="0.5">Drop > 0.5 ELO</option>
+                            <option value="1.0">Drop > 1.0 ELO</option>
+                            <option value="2.0">Drop > 2.0 ELO</option>
+                            <option value="3.0">Drop > 3.0 ELO</option>
+                            <option value="5.0">Drop > 5.0 ELO</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <div class="filter-section-title">Opening Family</div>
+                        <input type="text" id="fSearchOpen" class="form-control" placeholder="Search opening family..." list="ecoList" oninput="debounceFilter()">
+                    </div>
+
+                    <div class="filter-group">
+                        <div class="filter-section-title">Human Target</div>
+                        <input type="text" id="fSearchPlayer" class="form-control" placeholder="Search player..." list="playerList" oninput="debounceFilter()">
+                    </div>
+
+                    <div class="filter-group">
+                        <div class="filter-section-title">Broadcast Event</div>
+                        <input type="text" id="fSearchEvent" class="form-control" placeholder="Search event..." list="eventList" oninput="debounceFilter()">
+                    </div>
+
+                    <div class="filter-group-grid">
+                        <div class="filter-group">
+                            <div class="filter-section-title">Side</div>
+                            <select id="fSide" class="form-control" onchange="debounceFilter()">
+                                <option value="all">Both</option>
+                                <option value="white">White</option>
+                                <option value="black">Black</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <div class="filter-section-title">Title</div>
+                            <select id="fTitle" class="form-control" onchange="debounceFilter()">
+                                <option value="all">All</option>
+                                <option value="GM">GM</option>
+                                <option value="IM">IM</option>
+                                <option value="FM">FM</option>
+                                <option value="CM">CM</option>
+                                <option value="None">Untitled</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="filter-group-grid">
+                        <div class="filter-group">
+                            <div class="filter-section-title">Min Elo</div>
+                            <input type="number" id="fMinElo" class="form-control" placeholder="0" oninput="debounceFilter()">
+                        </div>
+                        <div class="filter-group">
+                            <div class="filter-section-title">Max Elo</div>
+                            <input type="number" id="fMaxElo" class="form-control" placeholder="4000" oninput="debounceFilter()">
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <div class="filter-section-title">Clock Metrics</div>
+                        <select id="fTime" class="form-control" onchange="debounceFilter()">
+                            <option value="all">Any Clock Remaining</option>
+                            <option value="30s">&lt; 30 seconds</option>
+                            <option value="60s">30 - 60 seconds</option>
+                            <option value="5m">1 - 5 minutes</option>
+                            <option value="15m">5 - 15 minutes</option>
+                            <option value="15m+">15+ minutes</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group-grid">
+                        <div class="filter-group">
+                            <div class="filter-section-title">Year</div>
+                            <input type="number" id="fYear" class="form-control" placeholder="e.g. 2024" oninput="debounceFilter()">
+                        </div>
+                        <div class="filter-group">
+                            <div class="filter-section-title">Phase</div>
+                            <select id="fPhase" class="form-control" onchange="debounceFilter()">
+                                <option value="all">All</option>
+                                <option value="Opening">Opening</option>
+                                <option value="Middlegame">Middlegame</option>
+                                <option value="Endgame">Endgame</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="filter-group" style="margin-top:5px; padding-top:10px;">
+                        <div class="filter-section-title">Sort Engine</div>
+                        <select id="dbSort" class="form-control" onchange="debounceFilter()">
+                            <option value="e_change DESC">Largest Eval Loss</option>
+                            <option value="clock_sec ASC">Lowest Clock</option>
+                            <option value="m_number ASC">Earliest Move</option>
+                            <option value="year DESC, m_number ASC">Newest First</option>
+                        </select>
+                    </div>
+
+                    <div class="mobile-action-bar">
+                        <button class="btn btn-primary w-100" onclick="debounceFilter(); closeMobileFilter();">Show Results</button>
+                        <button class="btn btn-danger w-100" onclick="resetExplorerFilters()">Reset</button>
+                    </div>
+
+                    <div class="desktop-action-bar" style="margin-top:5px;">
+                        <button class="btn btn-danger w-100" onclick="resetExplorerFilters()">Reset Filters</button>
+                    </div>
+                </div>
+            </aside>
+
+            <div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <span style="font-weight:600; color:var(--color-text-light);" id="expCount">SQL Loading...</span>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn btn-xs" onclick="exportData('md')"><i class="fa-solid fa-file-lines"></i> Markdown Brief</button>
+                        <button class="btn btn-xs" onclick="exportData('csv')"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+                    </div>
+                </div>
+                <div class="card-grid" id="explorerGrid"></div>
+                <div id="explorerPager" style="display:flex; justify-content:center; gap:8px; margin-top:20px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-atlas" class="tab-pane">
+        <button class="back-to-hub" onclick="switchTab('home')"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px; flex-wrap:wrap; gap:15px;">
+            <div>
+                <h2 style="margin:0 0 5px 0;">Opening Atlas</h2>
+                <p style="color:var(--color-text-light); margin:0; font-size:0.9rem;">Aggregation of error frequencies and evaluation drops categorized by ECO.<br><span style="font-size:0.85em;">💡 <i>Click on an ECO Code to instantly view all specific errors in the Explorer.</i></span></p>
+            </div>
+            <div style="display:flex; gap:10px; width:100%; max-width:450px;">
+                <select id="atlasSort" class="form-control" onchange="renderAtlas()" style="max-width:150px;">
+                    <option value="errors">Sort: Errors</option>
+                    <option value="blunders">Sort: Blunders</option>
+                    <option value="drop">Sort: Eval Drop</option>
+                    <option value="diff">Sort: CMX-ODI</option>
+                </select>
+                <input type="text" id="atlasSearch" class="form-control" placeholder="Search ECO or Opening..." list="ecoList" oninput="window.debounce('atlas', renderAtlas)">
+            </div>
+        </div>
+        <div class="data-table-wrapper">
+            <table class="data-table">
+                <thead><tr><th>ECO</th><th>Opening Family</th><th>Errors Logged</th><th>Blunder %</th><th>Avg Eval Loss</th><th>Pressure %</th><th>CMX-ODI</th></tr></thead>
+                <tbody id="atlasBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="tab-events" class="tab-pane">
+        <button class="back-to-hub" onclick="switchTab('home')"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px; flex-wrap:wrap; gap:15px;">
+            <div>
+                <h2 style="margin:0 0 5px 0;">Event Explorer</h2>
+                <p style="color:var(--color-text-light); margin:0; font-size:0.9rem;">Macro-level error analysis across major tournaments and broadcasts.<br><span style="font-size:0.85em;">💡 <i>Click on a Tournament Name to filter the Error Explorer.</i></span></p>
+            </div>
+            <div style="display:flex; gap:10px; width:100%; max-width:450px;">
+                <select id="eventSort" class="form-control" onchange="renderEvents()" style="max-width:150px;">
+                    <option value="errors">Sort: Errors</option>
+                    <option value="blunders">Sort: Blunders</option>
+                    <option value="drop">Sort: Eval Drop</option>
+                </select>
+                <input type="text" id="eventSearch" class="form-control" placeholder="Search an event..." list="eventList" oninput="window.debounce('event', renderEvents)">
+            </div>
+        </div>
+        <div class="data-table-wrapper">
+            <table class="data-table">
+                <thead><tr><th>Tournament / Event</th><th>Year</th><th>Errors Logged</th><th>Blunders</th><th>Avg Eval Loss</th><th>Pressure %</th></tr></thead>
+                <tbody id="eventBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="tab-players" class="tab-pane">
+        <button class="back-to-hub" onclick="switchTab('home')"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px; flex-wrap:wrap; gap:15px;">
+            <div>
+                <h2 style="margin:0 0 5px 0;">Player Profiles</h2>
+                <p style="color:var(--color-text-light); margin:0; font-size:0.9rem;">Investigate individual player vulnerability profiles.<br><span style="font-size:0.85em;">💡 <i>Click on a Player Name to filter the Error Explorer.</i></span></p>
+            </div>
+            <div style="display:flex; gap:10px; width:100%; max-width:450px;">
+                <select id="playerSort" class="form-control" onchange="renderPlayerProfiles()" style="max-width:150px;">
+                    <option value="errors DESC">Sort: Errors</option>
+                    <option value="blunders DESC">Sort: Blunders</option>
+                    <option value="avg_loss DESC">Sort: Eval Drop</option>
+                </select>
+                <input type="text" id="profileSearch" class="form-control" placeholder="Search a player..." list="playerList" oninput="window.debounce('profile', renderPlayerProfiles)">
+            </div>
+        </div>
+        <div class="data-table-wrapper">
+            <table class="data-table">
+                <thead><tr><th>Player</th><th>Peak ELO</th><th>Errors</th><th>Blunders</th><th>Avg Loss</th><th>Panic Avg</th><th>Top Opening</th></tr></thead>
+                <tbody id="playersBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="tab-dashboard" class="tab-pane">
+        <button class="back-to-hub" onclick="switchTab('home')"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+        <h2 style="margin-top:0;">Research Dashboard</h2>
+        <p style="color:var(--color-text-light); margin-bottom:20px;">Statistical visualizations natively rendered via DuckDB SQL aggregations.</p>
+        
+        <div class="dashboard-stats-row">
+            <div class="dash-stat">
+                <div class="dash-stat-title">Errors</div>
+                <div class="dash-stat-val" id="dashTotErrors">--</div>
+                <div class="dash-stat-sub">Human decision points</div>
+            </div>
+            <div class="dash-stat">
+                <div class="dash-stat-title">Games</div>
+                <div class="dash-stat-val" id="dashTotGames">--</div>
+                <div class="dash-stat-sub">Broadcast games</div>
+            </div>
+            <div class="dash-stat">
+                <div class="dash-stat-title">Players</div>
+                <div class="dash-stat-val" id="dashTotPlayers">--</div>
+                <div class="dash-stat-sub">Unique names</div>
+            </div>
+            <div class="dash-stat">
+                <div class="dash-stat-title">Openings</div>
+                <div class="dash-stat-val" id="dashTotOpenings">--</div>
+                <div class="dash-stat-sub">ECO families</div>
+            </div>
+            <div class="dash-stat">
+                <div class="dash-stat-title">Dataset</div>
+                <div class="dash-stat-val">CMEED v1.0</div>
+                <div class="dash-stat-sub">2025-2026</div>
+            </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 450px), 1fr)); gap:20px;">
+            <div class="chart-container">
+                <div class="chart-title">Error Phase Distribution</div>
+                <div id="chartPhase"></div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Severity Mix</div>
+                <div id="chartSeverity"></div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Time Pressure vs Average Loss</div>
+                <div id="chartTimePressure"></div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Color Bias</div>
+                <div id="chartColorBias"></div>
+            </div>
+            <div class="chart-container" style="grid-column: 1 / -1;">
+                <div class="chart-title">Move Number Heatmap</div>
+                <div class="heat" id="chartHeatmap"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-methodology" class="tab-pane">
+        <button class="back-to-hub" onclick="switchTab('home')"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+        
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 350px), 1fr)); gap:20px;">
+            <div class="chart-container">
+                <h2 style="margin:0 0 10px;color:var(--color-text-dark);font-size:1.15rem">Platform Architecture & Purpose</h2>
+                <div style="background:var(--color-bg-light); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:15px; color:var(--color-text-body); line-height:1.55; font-size:0.95rem">
+                    <b>Chess Multiverse Error Explorer</b> is the definitive public research interface designed for deep cognitive and statistical analysis of human chess blunders. It parses the <b>CMEED v1.0</b> (Chess Multiverse Error &amp; Evaluation Dataset) using serverless DuckDB WASM SQL. This architecture executes lightning-fast, client-side queries, making it an essential, high-performance tool for data scientists, behavioral researchers, and elite grandmaster preparation.
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h2 style="margin:0 0 10px;color:var(--color-text-dark);font-size:1.15rem">Derived Mathematical Metrics</h2>
+                <div style="background:var(--color-bg-light); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:15px; color:var(--color-text-body); line-height:1.55; font-size:0.95rem">
+                    <b>Expected Score Loss (ESL):</b> Estimated mathematically using a logistic curve mapped over engine evaluation points.<br><br>
+                    <b>Opening Danger Index (ODI):</b> A composite grade evaluating opening volatility by combining error volume, blunder share, average evaluation drop, unique player count, and time-pressure frequency.<br><br>
+                    <b>Panic Index:</b> Isolates catastrophic evaluation loss specifically when human players have &lt; 60 seconds remaining on the clock.
+                </div>
+            </div>
+
+            <div class="chart-container" style="grid-column: 1 / -1; border-color: var(--color-primary); background: #f0fdfa;">
+                <h2 style="margin:0 0 15px;color:var(--color-text-dark);font-size:1.15rem"><i class="fa-solid fa-flask" style="color:var(--color-primary); margin-right:8px;"></i>Principal Investigator</h2>
+                <div style="display: flex; flex-direction: column; gap: 6px; color:var(--color-text-body); font-size:0.95rem;">
+                    <div><b style="font-size: 1.2rem; color: var(--color-text-dark);">Sparsh Varshney</b></div>
+                    <div style="font-weight: 700; color: var(--color-text-light); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">Founder &bull; Data Scientist &bull; Researcher</div>
+                    <div style="margin-top: 4px;">
+                        <a href="https://orcid.org/0009-0004-7835-0673" target="_blank" class="cmeed-link" style="display:inline-flex; align-items:center; gap:5px;">
+                            <i class="fa-brands fa-orcid" style="color:#a6ce39; font-size:1.2rem;"></i> ORCID: 0009-0004-7835-0673
+                        </a>
+                    </div>
+                    <div style="margin-top: 8px; line-height: 1.6;">
+                        The Chess Multiverse Error Explorer represents a dedicated effort to bridge the gap between heavy engine analytics and human cognitive constraints, providing a framework to quantify how and why elite chess players falter under pressure.
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container" style="grid-column: 1 / -1;">
+                <h2 style="margin:0 0 10px;color:var(--color-text-dark);font-size:1.15rem">Dataset Metadata</h2>
+                <div id="metadataDisplay" style="background:var(--color-bg-light); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:15px; color:var(--color-text-body); line-height:1.55; font-size:0.95rem">
+                    Metadata dynamically pulls upon load.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="modalBackdrop" onclick="if(event.target === this) closePositionModal()">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 style="margin:0; font-size:1.4rem; color:var(--color-text-dark);" id="mTitle"></h3>
+                    <div style="color:var(--color-text-light); font-size:0.9rem; margin-top:4px;" id="mSubtitle"></div>
+                </div>
+                <button class="btn btn-xs" onclick="closePositionModal()"><i class="fa-solid fa-xmark" style="font-size:1.2rem;"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="pos-grid">
+                    <div style="width:100%; max-width:400px; margin:0 auto;">
+                        <div id="modalChessboard"></div>
+                        <div style="text-align:center; font-size:0.75rem; color:var(--color-text-light); margin-top:8px;">
+                            Board is playable for deep exploration. (Engine eval does not auto-update).
+                        </div>
+                        <div style="display:flex; justify-content:center; gap:8px; margin-top:10px; flex-wrap:wrap;">
+                            <button class="btn btn-xs" onclick="resetPositionBoard()"><i class="fa-solid fa-rotate-left"></i> Reset to Before Error</button>
+                            <button class="btn btn-xs" onclick="copyFen()"><i class="fa-solid fa-copy"></i> Copy FEN</button>
+                            <button class="btn btn-xs" onclick="analyzeLichess()" style="background:#fef3c7; border-color:#f59e0b; color:#b45309;"><i class="fa-solid fa-magnifying-glass-chart"></i> Analyze on Lichess</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="timeline-container">
+                            <div class="timeline-title">Error Timeline (Eval Swing)</div>
+                            <div id="mTimelineSvg" style="width:100%; height:120px;"></div>
+                        </div>
+
+                        <div class="compare-boxes">
+                            <div class="comp-box played">
+                                <span style="font-size:0.7rem; font-weight:700; text-transform:uppercase; color:var(--color-danger);">Played Move</span>
+                                <span class="comp-san" id="mPlayed"></span>
+                                <button class="btn btn-danger btn-xs mt-2" onclick="playModalLine('played')">Show on Board</button>
+                            </div>
+                            <div class="comp-box best">
+                                <span style="font-size:0.7rem; font-weight:700; text-transform:uppercase; color:var(--color-success);">Best Move</span>
+                                <span class="comp-san" id="mBest"></span>
+                                <button class="btn btn-success btn-xs mt-2" onclick="playModalLine('best')">Show on Board</button>
+                            </div>
+                        </div>
+                        
+                        <div class="metric-boxes">
+                            <div class="metric-box">
+                                <div style="font-size:0.75rem; text-transform:uppercase; font-weight:700; color:var(--color-text-light); margin-bottom:4px;">Expected Score Loss</div>
+                                <div class="metric-val" id="mESL"></div>
+                            </div>
+                            <div class="metric-box">
+                                <div style="font-size:0.75rem; text-transform:uppercase; font-weight:700; color:var(--color-text-light); margin-bottom:4px;">Clock Remaining</div>
+                                <div class="metric-val" id="mClock"></div>
+                            </div>
+                        </div>
+
+                        <ul class="context-list">
+                            <li><span><i class="fa-solid fa-trophy" style="color:#f59e0b; width:20px;"></i> Event</span> <b id="mEvent" class="cmeed-link" onclick="routeToEvent(this.innerText)"></b></li>
+                            <li><span><i class="fa-solid fa-book-open" style="color:#2563eb; width:20px;"></i> Opening</span> <b class="truncate cmeed-link" style="max-width:200px;" id="mOpening" onclick="routeToOpening(this.innerText)"></b></li>
+                            <li><span><i class="fa-regular fa-chess-king" style="color:var(--color-text-dark); width:20px;"></i> White</span> <b id="mWhite" class="cmeed-link" onclick="routeToPlayerErrors(this.getAttribute('data-name'))"></b></li>
+                            <li><span><i class="fa-solid fa-chess-king" style="color:var(--color-text-dark); width:20px;"></i> Black</span> <b id="mBlack" class="cmeed-link" onclick="routeToPlayerErrors(this.getAttribute('data-name'))"></b></li>
+                            <li><span><i class="fa-solid fa-flag-checkered" style="color:#10b981; width:20px;"></i> Result</span> <b id="mResult"></b></li>
+                        </ul>
+
+                        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;">
+                            <button class="btn" onclick="findSimilarMaterial()"><i class="fa-solid fa-layer-group"></i> Find Similar Material Errors</button>
+                            <button class="btn" onclick="copyCitation()"><i class="fa-solid fa-quote-right"></i> Copy Academic Citation</button>
+                        </div>
+                        <div id="similarContainer" style="margin-top:12px; display:none; background:var(--color-bg-light); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:15px; color:var(--color-text-body); font-size:0.9rem;"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="module" src="js/app.js"></script>
+
+</body>
+</html>
