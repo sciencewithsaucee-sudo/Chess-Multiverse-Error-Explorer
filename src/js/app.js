@@ -205,6 +205,28 @@ window.routeToEvent = function(eventName) {
     window.debounceFilter();
 };
 
+// Auto-Run Tutorial Function
+window.runNimzoTutorial = function() {
+    window.closePositionModal();
+    window.clearExplorerInputs();
+
+    document.getElementById('fSearchOpen').value = 'Nimzo-Indian';
+    window.appState.filters.open = 'Nimzo-Indian';
+
+    document.getElementById('fTitle').value = 'GM';
+    window.appState.filters.title = 'GM';
+
+    document.getElementById('fTime').value = '30s';
+    window.appState.filters.time = '30s';
+
+    window.switchTab('explorer');
+    window.debounceFilter();
+
+    setTimeout(() => {
+        alert("Case Study Loaded: Filtering CMEED for GM errors in the Nimzo-Indian with < 30 seconds on the clock.\n\nYou can now click 'Extract Validation Dataset' to download these exact records.");
+    }, 600);
+};
+
 // Modal Tools
 window.copyFen = function() {
     if(window.detailGame) {
@@ -369,51 +391,6 @@ async function initDuckDB() {
         loaderMsg.innerHTML = `<span style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Error: ${err.message}</span>`;
     }
 }
-
-// UTILS
-window.formatClock = function(sec) {
-    if(!sec) return 'N/A';
-    let m = Math.floor(sec / 60);
-    let s = sec % 60;
-    return m > 0 ? `${m}m ${s}s` : `${s}s`;
-};
-
-window.getBadge = function(type) {
-    let t = (type||'').toLowerCase();
-    if(t==='blunder') return 'badge-blunder';
-    if(t==='mistake') return 'badge-mistake';
-    return 'badge-inaccuracy';
-};
-
-// EXPLORER FILTERS
-window.setFilter = function(cat, val) {
-    if(cat === 'type') {
-        window.appState.filters.type = val;
-        document.querySelectorAll('[id^="fType"]').forEach(b => b.classList.remove('active'));
-        let cleanVal = val.charAt(0).toUpperCase() + val.slice(1);
-        let targetBtn = document.getElementById('fType' + cleanVal);
-        if(targetBtn) targetBtn.classList.add('active');
-    }
-    window.debounceFilter();
-};
-
-window.toggleCritical = function() {
-    window.appState.filters.criticalOnly = !window.appState.filters.criticalOnly;
-    document.getElementById('btnCritical').classList.toggle('btn-primary');
-    window.debounceFilter();
-};
-
-window.debounceFilter = function() {
-    window.debounce('explorer', window.runExplorerFilters, 500);
-};
-
-window.resetExplorerFilters = function() {
-    window.clearExplorerInputs();
-    if(window.innerWidth <= 900) {
-        window.closeMobileFilter();
-    }
-    window.debounceFilter();
-};
 
 function readFilterInputsToState() {
     let rawOpen = document.getElementById('fSearchOpen').value;
