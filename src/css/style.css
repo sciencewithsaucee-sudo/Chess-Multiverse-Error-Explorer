@@ -78,10 +78,10 @@ body { margin: 0; overflow-x: hidden; }
 #cmeedApp .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-light); color: var(--color-text-dark); font-family: var(--font-body); font-size: 0.85rem; }
 #cmeedApp .form-control:focus { outline: none; border-color: var(--color-primary); background: var(--color-bg-white); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2); }
 
-#cmeedApp .badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; border: 1px solid transparent; display: inline-block; white-space: nowrap; flex-shrink: 0;}
-#cmeedApp .badge-blunder { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
-#cmeedApp .badge-mistake { background: #fef3c7; color: #b45309; border-color: #fde68a; }
-#cmeedApp .badge-inaccuracy { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
+#cmeedApp .badge { font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; border: 1px solid transparent; display: inline-block; white-space: nowrap; flex-shrink: 0;}
+#cmeedApp .badge-blunder { background: #fef2f2; color: #ef4444; border-color: #fca5a5; }
+#cmeedApp .badge-mistake { background: #fffbeb; color: #d97706; border-color: #fcd34d; }
+#cmeedApp .badge-inaccuracy { background: #f0f9ff; color: #0284c7; border-color: #bae6fd; }
 
 #cmeedApp .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
 #cmeedApp .w-100 { width: 100%; }
