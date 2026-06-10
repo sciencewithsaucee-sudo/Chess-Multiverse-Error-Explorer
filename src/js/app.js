@@ -205,59 +205,170 @@ window.routeToEvent = function(eventName) {
     window.debounceFilter();
 };
 
-// Auto-Run Tutorial Function (Upgraded with Live Math)
+// --- NEW CUSTOM ALERT MODAL FUNCTIONS ---
+window.openAlertModal = function(htmlContent) {
+    document.getElementById('alertBody').innerHTML = htmlContent;
+    document.getElementById('alertBackdrop').classList.add('show');
+    document.body.style.overflow = 'hidden';
+};
+
+window.closeAlertModal = function() {
+    document.getElementById('alertBackdrop').classList.remove('show');
+    document.body.style.overflow = 'auto';
+};
+
+// --- CASE STUDY 1: NIMZO-INDIAN ---
 window.runNimzoTutorial = async function() {
     window.closePositionModal();
     window.clearExplorerInputs();
 
     document.getElementById('fSearchOpen').value = 'Nimzo-Indian';
     window.appState.filters.open = 'Nimzo-Indian';
-
     document.getElementById('fTitle').value = 'GM';
     window.appState.filters.title = 'GM';
-
     document.getElementById('fTime').value = '30s';
     window.appState.filters.time = '30s';
 
     window.switchTab('explorer');
     window.debounceFilter();
 
-    // Calculate the specific statistic live to prove the tutorial hypothesis
     if (window.cmeedConn) {
         try {
-            let statQ = await window.execSQL(`
-                SELECT 
-                    COUNT(*) as total,
-                    SUM(CASE WHEN error_type='Blunder' THEN 1 ELSE 0 END) as blunders
+            let panicQ = await window.execSQL(`
+                SELECT COUNT(*) as total, SUM(CASE WHEN error_type='Blunder' THEN 1 ELSE 0 END) as blunders
                 FROM cmeed 
                 WHERE player_title = 'GM' 
                 AND (LOWER(eco) LIKE '%nimzo-indian%' OR LOWER(opening) LIKE '%nimzo-indian%') 
                 AND clock_sec < 30
             `);
-            let stats = statQ.toArray()[0].toJSON();
-            let pct = ((Number(stats.blunders) / Number(stats.total)) * 100).toFixed(1);
+            let panicStats = panicQ.toArray()[0].toJSON();
+            let panicPct = panicStats.total > 0 ? ((Number(panicStats.blunders) / Number(panicStats.total)) * 100).toFixed(1) : "0.0";
+
+            let baseQ = await window.execSQL(`
+                SELECT COUNT(*) as total, SUM(CASE WHEN error_type='Blunder' THEN 1 ELSE 0 END) as blunders
+                FROM cmeed 
+                WHERE player_title = 'GM' 
+                AND (LOWER(eco) LIKE '%nimzo-indian%' OR LOWER(opening) LIKE '%nimzo-indian%') 
+                AND clock_sec >= 900
+            `);
+            let baseStats = baseQ.toArray()[0].toJSON();
+            let basePct = baseStats.total > 0 ? ((Number(baseStats.blunders) / Number(baseStats.total)) * 100).toFixed(1) : "0.0";
+
+            let elBase = document.getElementById('tutBaselineRate');
+            if (elBase) elBase.innerText = basePct + "%";
+            let elPanic = document.getElementById('tutPanicRate');
+            if (elPanic) elPanic.innerText = panicPct + "%";
 
             setTimeout(() => {
-                alert(`CASE STUDY VERIFIED:\n\nDuckDB found ${stats.total} total GM errors in the Nimzo-Indian under 30 seconds.\n\nTotal Blunders: ${stats.blunders}\nCalculated Blunder Rate: ${pct}%\n\nThe Explorer has been filtered to show these exact records.`);
+                let html = `
+                    <div style="margin-bottom: 15px;"><b>DuckDB Analysis Complete:</b> GM Nimzo-Indian Blunders</div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom: 8px;">
+                        <span>Baseline (15m+):</span>
+                        <span style="font-weight:bold;">${basePct}% Blunder Rate</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
+                        <span>Panic (< 30s):</span>
+                        <span style="font-weight:bold; color:var(--color-danger);">${panicPct}% Blunder Rate</span>
+                    </div>
+                    <div>Found ${panicStats.total} total GM errors in the Nimzo-Indian under 30 seconds. The Explorer is now filtered to show these exact records.</div>
+                `;
+                window.openAlertModal(html);
             }, 800);
         } catch(e) { console.error(e); }
     }
 };
 
-// Dedicated Tutorial CSV Extractor (Bulletproof)
-window.extractNimzoDataset = async function() {
+// --- CASE STUDY 2: MAGNUS CARLSEN ---
+window.runCarlsenTutorial = async function() {
+    window.closePositionModal();
+    window.clearExplorerInputs();
+
+    document.getElementById('fSearchPlayer').value = 'Carlsen';
+    window.appState.filters.player = 'Carlsen';
+    document.getElementById('fSide').value = 'black';
+    window.appState.filters.side = 'black';
+    document.getElementById('fMinDrop').value = '2.0';
+    window.appState.filters.minDrop = '2.0';
+    
+    // UI dropdown matching (<60s simulation via '30s' which represents <30s and <60s generically in the UI steps)
+    document.getElementById('fTime').value = '30s'; 
+    window.appState.filters.time = '30s'; 
+
+    window.switchTab('explorer');
+    window.debounceFilter();
+
+    if (window.cmeedConn) {
+        try {
+            let blackQ = await window.execSQL(`
+                SELECT COUNT(*) as total, AVG(e_change) as avg_loss
+                FROM cmeed 
+                WHERE LOWER(player) LIKE '%carlsen%' 
+                AND side = 'black'
+                AND clock_sec < 60
+                AND e_change > 2.0
+            `);
+            let blackStats = blackQ.toArray()[0].toJSON();
+
+            let whiteQ = await window.execSQL(`
+                SELECT COUNT(*) as total, AVG(e_change) as avg_loss
+                FROM cmeed 
+                WHERE LOWER(player) LIKE '%carlsen%' 
+                AND side = 'white'
+                AND clock_sec < 60
+                AND e_change > 2.0
+            `);
+            let whiteStats = whiteQ.toArray()[0].toJSON();
+
+            setTimeout(() => {
+                let bTotal = blackStats.total || 0;
+                let bAvg = bTotal > 0 ? Number(blackStats.avg_loss).toFixed(2) : "0.00";
+                let wTotal = whiteStats.total || 0;
+                let wAvg = wTotal > 0 ? Number(whiteStats.avg_loss).toFixed(2) : "0.00";
+
+                let html = `
+                    <div style="margin-bottom: 10px;"><b>DuckDB Analysis Complete:</b> Carlsen (< 60s, Drop > 2.0 ELO)</div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom: 8px;">
+                        <span>Playing Black:</span>
+                        <span style="font-weight:bold; color:var(--color-danger);">${bTotal} severe errors (Avg Drop: ${bAvg})</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
+                        <span>Playing White:</span>
+                        <span style="font-weight:bold;">${wTotal} severe errors (Avg Drop: ${wAvg})</span>
+                    </div>
+                    <div>The Explorer is now filtered to show his critical errors as Black.</div>
+                `;
+                window.openAlertModal(html);
+            }, 800);
+        } catch(e) { console.error(e); }
+    }
+};
+
+// --- DUAL CSV EXTRACTOR ---
+window.extractTutorialDataset = async function(type) {
     if (!window.cmeedConn) {
-        alert("Please wait for the database to finish loading.");
+        window.openAlertModal("Please wait for the database to finish loading.");
         return;
     }
     try {
-        // Force the specific tutorial query regardless of UI state
-        let q = `SELECT * FROM cmeed 
+        let q = "";
+        let filename = "";
+        if (type === 'nimzo') {
+            q = `SELECT * FROM cmeed 
                  WHERE player_title = 'GM' 
                  AND (LOWER(eco) LIKE '%nimzo-indian%' OR LOWER(opening) LIKE '%nimzo-indian%') 
                  AND clock_sec < 30 
                  ORDER BY e_change DESC LIMIT 3000`;
-                 
+            filename = 'cmeed_nimzo_panic_validation.csv';
+        } else if (type === 'carlsen') {
+            q = `SELECT * FROM cmeed 
+                 WHERE LOWER(player) LIKE '%carlsen%' 
+                 AND side = 'black'
+                 AND clock_sec < 60
+                 AND e_change > 2.0
+                 ORDER BY e_change DESC LIMIT 3000`;
+            filename = 'cmeed_carlsen_black_panic_validation.csv';
+        }
+        
         let res = await window.execSQL(q);
         let rows = res.toArray().map(r => r.toJSON());
         
@@ -266,13 +377,14 @@ window.extractNimzoDataset = async function() {
         
         const a = document.createElement('a'); 
         a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); 
-        a.download = 'cmeed_nimzo_panic_validation.csv'; 
+        a.download = filename; 
         a.click();
     } catch(err) { 
         console.error("Export Error:", err); 
-        alert("Failed to extract validation dataset.");
+        window.openAlertModal("Failed to extract validation dataset.");
     }
 };
+
 // Modal Tools
 window.copyFen = function() {
     if(window.detailGame) {
@@ -437,51 +549,6 @@ async function initDuckDB() {
         loaderMsg.innerHTML = `<span style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Error: ${err.message}</span>`;
     }
 }
-
-// UTILS
-window.formatClock = function(sec) {
-    if(!sec) return 'N/A';
-    let m = Math.floor(sec / 60);
-    let s = sec % 60;
-    return m > 0 ? `${m}m ${s}s` : `${s}s`;
-};
-
-window.getBadge = function(type) {
-    let t = (type||'').toLowerCase();
-    if(t==='blunder') return 'badge-blunder';
-    if(t==='mistake') return 'badge-mistake';
-    return 'badge-inaccuracy';
-};
-
-// EXPLORER FILTERS
-window.setFilter = function(cat, val) {
-    if(cat === 'type') {
-        window.appState.filters.type = val;
-        document.querySelectorAll('[id^="fType"]').forEach(b => b.classList.remove('active'));
-        let cleanVal = val.charAt(0).toUpperCase() + val.slice(1);
-        let targetBtn = document.getElementById('fType' + cleanVal);
-        if(targetBtn) targetBtn.classList.add('active');
-    }
-    window.debounceFilter();
-};
-
-window.toggleCritical = function() {
-    window.appState.filters.criticalOnly = !window.appState.filters.criticalOnly;
-    document.getElementById('btnCritical').classList.toggle('btn-primary');
-    window.debounceFilter();
-};
-
-window.debounceFilter = function() {
-    window.debounce('explorer', window.runExplorerFilters, 500);
-};
-
-window.resetExplorerFilters = function() {
-    window.clearExplorerInputs();
-    if(window.innerWidth <= 900) {
-        window.closeMobileFilter();
-    }
-    window.debounceFilter();
-};
 
 function readFilterInputsToState() {
     let rawOpen = document.getElementById('fSearchOpen').value;
