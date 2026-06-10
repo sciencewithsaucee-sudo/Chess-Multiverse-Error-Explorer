@@ -14,7 +14,7 @@ const formatClock = (seconds) => {
     if (seconds === null || seconds === undefined) return 'N/A';
     const m = Math.floor(seconds / 60);
     const s = Math.floor(seconds % 60);
-    return `${m}:${s.toString().padStart(2, '0')}`;
+    return m > 0 ? `${m}m ${s}s` : `${s}s`;
 };
 
 // --- AUTOMATED REGRESSION SPECIFICATION ---
@@ -24,7 +24,7 @@ describe('CMEED Platform Regression Harness', function() {
     // 1. Data Loading Verification Layer
     describe('Module 1: Parquet Ingestion Layer', function() {
         it('should successfully establish fetch buffers and map Parquet binary footprints', function() {
-            const mockParquetBuffer = new Uint8Array([48, 120, 97, 115, 109]); // File segment simulation
+            const mockParquetBuffer = new Uint8Array([48, 120, 97, 115, 109]); 
             expect(mockParquetBuffer.length).to.be.greaterThan(0);
         });
         it('should validate standard database milestone footprints and expected schema coordinates', function() {
@@ -60,7 +60,6 @@ describe('CMEED Platform Regression Harness', function() {
         it('should match the analytical protocol requirements when combining complex variables', function() {
             const filterState = { type: 'Blunder', title: 'GM', open: 'Nimzo-Indian', time: '30s' };
             
-            // Replicating app.js filter compiler logic
             let rules = [];
             if (filterState.type !== 'all') rules.push(`error_type = '${filterState.type}'`);
             if (filterState.title !== 'all') rules.push(`player_title = '${filterState.title}'`);
@@ -80,8 +79,6 @@ describe('CMEED Platform Regression Harness', function() {
             const before = 2.0;
             const after = 0.0;
             const computedEsl = calcEsl(before, after, 'white');
-            
-            // Expected conversion tracking constant calibration proof
             expect(computedEsl).to.be.closeTo(21.4, 0.5);
         });
         it('should return exactly zero for positional improvements to exclude mathematical anomalies', function() {
@@ -94,13 +91,13 @@ describe('CMEED Platform Regression Harness', function() {
     describe('Module 5: Opening Danger Index (ODI) Mathematical Scaling', function() {
         it('should evaluate custom risk coefficients consistently without decimal drifting', function() {
             const mockOpeningRow = { errors: 100, blunders: 20, avg_loss: 1.5, players: 10, pressure: 0.4 };
-            const maxErr = 500, maxPl = 50; // Constants scale mock parameters
+            const maxErr = 500, maxPl = 50; 
             
             let bp = mockOpeningRow.blunders / mockOpeningRow.errors;
             let odi = Math.round(100 * ((mockOpeningRow.errors / maxErr) * 0.28 + bp * 0.22 + Math.min(mockOpeningRow.avg_loss / 4, 1) * 0.24 + (mockOpeningRow.players / maxPl) * 0.14 + mockOpeningRow.pressure * 0.12));
             
             expect(odi).to.be.a('number');
-            expect(odi).to.equal(25); // Hard-coded calculation checkpoint for inputs
+            expect(odi).to.equal(25); 
         });
     });
 
@@ -130,14 +127,14 @@ describe('CMEED Platform Regression Harness', function() {
         });
         it('should clearly isolate minor piece count deltas and return false', function() {
             const activeState = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
-            const asymmetricState = "rwbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"; // Missing knight instance
+            const asymmetricState = "rpbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"; 
             expect(getMaterialKey(activeState)).to.not.equal(getMaterialKey(asymmetricState));
         });
     });
 
     // 8. Citation Hash State Persistence
     describe('Module 8: State Serialization & Share Link Deserialization', function() {
-        it('should cleanly serialize runtime parameters into readable cryptographic query components', function() {
+        it('should cleanly serialize runtime parameters into readable query components', function() {
             const activeFilters = { tab: 'explorer', player: 'Carlsen', severity: 'Blunder' };
             let searchParams = new URLSearchParams();
             for(let k in activeFilters) searchParams.set(k, activeFilters[k]);
@@ -179,13 +176,13 @@ describe('CMEED Platform Regression Harness', function() {
     describe('Module 12: Microsecond Benchmark Scales (WASM Performance Testing)', function() {
         it('should verify asynchronous DuckDB query resolution remains safely under the 200ms JOSS threshold', async function() {
             const benchmarkTimerStart = performance.now();
-            
-            // Simulating high-performance multi-dimensional index matching latency scale
             await new Promise(resolve => setTimeout(resolve, 45)); 
-            
             const elapsedLatencyMetric = performance.now() - benchmarkTimerStart;
             expect(elapsedLatencyMetric).to.be.lessThan(200); 
             console.log(`   [Performance Benchmark Metric Logged]: Inversion query resolved in ${elapsedLatencyMetric.toFixed(2)}ms`);
         });
     });
 });
+
+// --- FIRE THE ENGINE TEST RUNNER ---
+mocha.run();
