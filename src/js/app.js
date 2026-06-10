@@ -15,7 +15,7 @@ window.appState = {
     }
 };
 
-// UI Formatters & Missing Utilities
+// UI Formatters
 window.getBadge = function(type) {
     if (!type) return '';
     const t = type.toLowerCase();
@@ -64,6 +64,39 @@ window.debounce = function(key, fn, delay = 500) {
 
 window.debounceFilter = function() {
     window.debounce('filter', window.runExplorerFilters, 400);
+};
+
+// --- FILTER CLICK HANDLERS (Matches your HTML) ---
+
+window.setFilter = function(key, value) {
+    window.appState.filters[key] = value;
+    
+    // Visually update the active class for error severity buttons
+    if (key === 'type') {
+        document.querySelectorAll('[id^="fType"]').forEach(b => b.classList.remove('active'));
+        let btnId = 'fType' + value.charAt(0).toUpperCase() + value.slice(1);
+        let btn = document.getElementById(btnId);
+        if(btn) btn.classList.add('active');
+    }
+    
+    window.runExplorerFilters();
+};
+
+window.toggleCritical = function() {
+    window.appState.filters.criticalOnly = !window.appState.filters.criticalOnly;
+    
+    let btn = document.getElementById('btnCritical');
+    if(btn) {
+        if(window.appState.filters.criticalOnly) btn.classList.add('btn-primary');
+        else btn.classList.remove('btn-primary');
+    }
+    
+    window.runExplorerFilters();
+};
+
+window.resetExplorerFilters = function() {
+    window.clearExplorerInputs();
+    window.runExplorerFilters();
 };
 
 // Hash Routing & View Sharing
