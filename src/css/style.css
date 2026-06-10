@@ -86,7 +86,7 @@ body { margin: 0; overflow-x: hidden; }
 #cmeedApp .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
 #cmeedApp .w-100 { width: 100%; }
 
-#cmeedLoader { position: fixed; bottom: 20px; right: 20px; background: var(--color-text-dark); color: white; padding: 12px 20px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; z-index: 9999; box-shadow: var(--shadow-lg); transition: opacity 0.3s; }
+#cmeedLoader { position: fixed; bottom: 20px; right: 20px; background:#0f172a; color: white; padding: 12px 20px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; z-index: 9999; box-shadow: var(--shadow-lg); transition: opacity 0.3s; }
 #cmeedLoader i { animation: spin 1s linear infinite; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
