@@ -289,7 +289,6 @@ window.runCarlsenTutorial = async function() {
     window.appState.filters.side = 'black';
     document.getElementById('fMinDrop').value = '2.0';
     window.appState.filters.minDrop = '2.0';
-    
     document.getElementById('fTime').value = '30s'; 
     window.appState.filters.time = '30s'; 
 
