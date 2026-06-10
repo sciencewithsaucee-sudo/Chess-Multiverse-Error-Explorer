@@ -18,18 +18,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
-</head>
 <body>
 
 <datalist id="playerList"></datalist>
 <datalist id="eventList"></datalist>
 <datalist id="ecoList"></datalist>
 
-<div id="cmeedLoader">
-    <i class="fa-solid fa-spinner"></i> <span id="loaderMsg">Initializing SQL Environment...</span>
-</div>
-
 <div id="cmeedApp">
+
+    <div id="cmeedLoader">
+        <i class="fa-solid fa-spinner"></i> <span id="loaderMsg">Initializing SQL Environment...</span>
+    </div>
 
     <div id="tab-home" class="tab-pane active">
         <div class="hero-section">
@@ -382,7 +381,7 @@
         </div>
     </div>
 
-<div id="tab-methodology" class="tab-pane">
+    <div id="tab-methodology" class="tab-pane">
         <button class="back-to-hub" onclick="switchTab('home')"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
         
         <div style="max-width: 1000px; margin: 0 auto;">
@@ -460,14 +459,6 @@
                 </div>
             </div>
 
-        </div>
-    </div>
-            <div class="chart-container" style="grid-column: 1 / -1;">
-                <h2 style="margin:0 0 10px;color:var(--color-text-dark);font-size:1.15rem">Dataset Metadata</h2>
-                <div id="metadataDisplay" style="background:var(--color-bg-light); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:15px; color:var(--color-text-body); line-height:1.55; font-size:0.95rem">
-                    Metadata dynamically pulls upon load.
-                </div>
-            </div>
         </div>
     </div>
 
