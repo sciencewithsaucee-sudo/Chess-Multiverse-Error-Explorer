@@ -19,9 +19,9 @@ window.appState = {
 window.getBadge = function(type) {
     if (!type) return '';
     const t = type.toLowerCase();
-    if (t === 'blunder') return 'badge-danger';
-    if (t === 'mistake') return 'badge-warning';
-    return 'badge-info';
+    if (t === 'blunder') return 'badge-blunder';
+    if (t === 'mistake') return 'badge-mistake';
+    return 'badge-inaccuracy';
 };
 
 window.formatClock = function(seconds) {
