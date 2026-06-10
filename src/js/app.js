@@ -205,8 +205,8 @@ window.routeToEvent = function(eventName) {
     window.debounceFilter();
 };
 
-// Auto-Run Tutorial Function
-window.runNimzoTutorial = function() {
+// Auto-Run Tutorial Function (Upgraded with Live Math)
+window.runNimzoTutorial = async function() {
     window.closePositionModal();
     window.clearExplorerInputs();
 
@@ -222,11 +222,57 @@ window.runNimzoTutorial = function() {
     window.switchTab('explorer');
     window.debounceFilter();
 
-    setTimeout(() => {
-        alert("Case Study Loaded: Filtering CMEED for GM errors in the Nimzo-Indian with < 30 seconds on the clock.\n\nYou can now click 'Extract Validation Dataset' to download these exact records.");
-    }, 600);
+    // Calculate the specific statistic live to prove the tutorial hypothesis
+    if (window.cmeedConn) {
+        try {
+            let statQ = await window.execSQL(`
+                SELECT 
+                    COUNT(*) as total,
+                    SUM(CASE WHEN error_type='Blunder' THEN 1 ELSE 0 END) as blunders
+                FROM cmeed 
+                WHERE player_title = 'GM' 
+                AND (LOWER(eco) LIKE '%nimzo-indian%' OR LOWER(opening) LIKE '%nimzo-indian%') 
+                AND clock_sec < 30
+            `);
+            let stats = statQ.toArray()[0].toJSON();
+            let pct = ((Number(stats.blunders) / Number(stats.total)) * 100).toFixed(1);
+
+            setTimeout(() => {
+                alert(`CASE STUDY VERIFIED:\n\nDuckDB found ${stats.total} total GM errors in the Nimzo-Indian under 30 seconds.\n\nTotal Blunders: ${stats.blunders}\nCalculated Blunder Rate: ${pct}%\n\nThe Explorer has been filtered to show these exact records.`);
+            }, 800);
+        } catch(e) { console.error(e); }
+    }
 };
 
+// Dedicated Tutorial CSV Extractor (Bulletproof)
+window.extractNimzoDataset = async function() {
+    if (!window.cmeedConn) {
+        alert("Please wait for the database to finish loading.");
+        return;
+    }
+    try {
+        // Force the specific tutorial query regardless of UI state
+        let q = `SELECT * FROM cmeed 
+                 WHERE player_title = 'GM' 
+                 AND (LOWER(eco) LIKE '%nimzo-indian%' OR LOWER(opening) LIKE '%nimzo-indian%') 
+                 AND clock_sec < 30 
+                 ORDER BY e_change DESC LIMIT 3000`;
+                 
+        let res = await window.execSQL(q);
+        let rows = res.toArray().map(r => r.toJSON());
+        
+        let csv = "ID,Player,Elo,Event,Opening,Move,Played,Best,EvalChange,Clock\n";
+        rows.forEach(o => csv += `${o.error_id},"${o.player}",${Number(o.p_elo)},"${o.event}","${o.eco}",${Number(o.m_number)},${o.played_move},${o.best_move},${Number(o.e_change)},${Number(o.clock_sec)}\n`);
+        
+        const a = document.createElement('a'); 
+        a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); 
+        a.download = 'cmeed_nimzo_panic_validation.csv'; 
+        a.click();
+    } catch(err) { 
+        console.error("Export Error:", err); 
+        alert("Failed to extract validation dataset.");
+    }
+};
 // Modal Tools
 window.copyFen = function() {
     if(window.detailGame) {
