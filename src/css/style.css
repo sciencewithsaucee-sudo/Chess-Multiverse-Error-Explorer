@@ -1,0 +1,274 @@
+/* =========================================================================
+   1. NATIVE THEME SYNC & MODERN SCROLLBARS
+   ========================================================================= */
+#cmeedApp {
+    --color-primary: var(--primary-color, #2563eb);        
+    --color-primary-dark: var(--primary-dark-color, #1e40af);
+    --color-accent: var(--accent-color, #06b6d4);        
+    --color-danger: var(--danger-color, #ef4444);
+    --color-warning: var(--warning-color, #f59e0b);
+    --color-success: var(--success-color, #10b981);
+    
+    --color-bg-body: var(--bg-body, #f8fafc);        
+    --color-bg-white: var(--bg-card, #ffffff);
+    --color-bg-light: var(--search-bg, #f1f5f9);
+    --color-bg-modal: var(--bg-card, #ffffff);
+    
+    --color-text-dark: var(--text-main, #0f172a);
+    --color-text-body: var(--text-muted, #334155);
+    --color-text-light: var(--text-muted, #64748b);
+    --color-border: var(--border, #e2e8f0);
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --side-padding: 1.5rem;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    background-color: transparent; 
+    color: var(--color-text-body);
+    font-family: var(--font-body);
+    min-height: 100vh;
+}
+
+/* Modern Global Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; border: 2px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; border: 2px solid transparent; background-clip: padding-box; }
+* { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+
+body { margin: 0; overflow-x: hidden; }
+
+#cmeedApp * { box-sizing: border-box; }
+#cmeedApp a { text-decoration: none; color: inherit; }
+#cmeedApp button { font-family: inherit; }
+
+.cmeed-link { color: var(--color-primary); cursor: pointer; text-decoration: underline; text-decoration-color: transparent; transition: text-decoration-color 0.2s; font-weight: 600; }
+.cmeed-link:hover { text-decoration-color: var(--color-primary); }
+
+/* =========================================================================
+   2. HUB AND SPOKE ARCHITECTURE
+   ========================================================================= */
+#cmeedApp .tab-pane { display: none; padding: 40px var(--side-padding); max-width: 1400px; margin: 0 auto; animation: fadeIn 0.3s; }
+#cmeedApp .tab-pane.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+#cmeedApp .back-to-hub { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--color-bg-white); border: 1px solid var(--color-border); border-radius: 30px; font-weight: 700; color: var(--color-text-body); cursor: pointer; margin-bottom: 24px; transition: all 0.2s ease; box-shadow: var(--shadow-sm); font-size: 0.85rem; }
+#cmeedApp .back-to-hub:hover { color: white; background: var(--color-text-dark); border-color: var(--color-text-dark); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+/* =========================================================================
+   3. UI COMPONENTS
+   ========================================================================= */
+#cmeedApp .btn { padding: 8px 16px; border-radius: var(--radius-md); border: 1px solid var(--color-border); background: var(--color-bg-white); color: var(--color-text-body); font-weight: 600; cursor: pointer; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+#cmeedApp .btn:hover { background: var(--color-bg-light); }
+#cmeedApp .btn-primary { background: var(--color-primary) !important; color: #ffffff !important; border-color: var(--color-primary) !important; }
+#cmeedApp .btn-primary:hover { background: var(--color-primary-dark) !important; border-color: var(--color-primary-dark) !important; }
+#cmeedApp .btn-danger { background: var(--color-danger) !important; color: #ffffff !important; border-color: var(--color-danger) !important; }
+#cmeedApp .btn-success { background: var(--color-success) !important; color: #ffffff !important; border-color: var(--color-success) !important; }
+#cmeedApp .btn-xs { padding: 4px 8px; font-size: 0.75rem; }
+
+#cmeedApp .btn-check { border: 1px solid var(--color-border); background: var(--color-bg-light); color: var(--color-text-light); }
+#cmeedApp .btn-check.active { background: var(--color-primary) !important; color: #ffffff !important; border-color: var(--color-primary) !important; }
+
+#cmeedApp .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-light); color: var(--color-text-dark); font-family: var(--font-body); font-size: 0.85rem; }
+#cmeedApp .form-control:focus { outline: none; border-color: var(--color-primary); background: var(--color-bg-white); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2); }
+
+#cmeedApp .badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; border: 1px solid transparent; display: inline-block; white-space: nowrap; flex-shrink: 0;}
+#cmeedApp .badge-blunder { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+#cmeedApp .badge-mistake { background: #fef3c7; color: #b45309; border-color: #fde68a; }
+#cmeedApp .badge-inaccuracy { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
+
+#cmeedApp .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+#cmeedApp .w-100 { width: 100%; }
+
+#cmeedLoader { position: fixed; bottom: 20px; right: 20px; background: var(--color-text-dark); color: white; padding: 12px 20px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; z-index: 9999; box-shadow: var(--shadow-lg); transition: opacity 0.3s; }
+#cmeedLoader i { animation: spin 1s linear infinite; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* =========================================================================
+   4. HOME HUB VIEW
+   ========================================================================= */
+#cmeedApp .hero-section { text-align: center; padding: 20px 0 60px; }
+#cmeedApp .hero-title { font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 800; color: var(--color-text-dark); margin: 0 0 15px 0; letter-spacing: -1px; }
+#cmeedApp .hero-subtitle { font-size: 1.2rem; color: var(--color-text-light); margin: 0 0 40px 0; max-width: 800px; margin-inline: auto; }
+
+#cmeedApp .hero-stats { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-bottom: 50px; }
+#cmeedApp .hero-stat-box { background: var(--color-bg-white); border: 1px solid var(--color-border); padding: 20px 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); transition: 0.2s; }
+#cmeedApp .hero-stat-box:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--color-primary); }
+#cmeedApp .hero-stat-box h2 { margin: 0; font-size: 2.5rem; color: var(--color-primary); font-family: var(--font-mono); }
+#cmeedApp .hero-stat-box span { font-weight: 600; color: var(--color-text-light); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+
+#cmeedApp .portal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1100px; margin: 0 auto; }
+#cmeedApp .portal-card { background: var(--color-bg-white); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 30px; text-align: center; transition: all 0.2s ease; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 15px; box-shadow: var(--shadow-sm); }
+#cmeedApp .portal-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: var(--color-primary); }
+#cmeedApp .portal-icon { font-size: 2.5rem; color: var(--color-primary); margin-bottom: 5px; }
+#cmeedApp .portal-card h3 { margin: 0; font-size: 1.3rem; color: var(--color-text-dark); }
+#cmeedApp .portal-card p { margin: 0; font-size: 0.95rem; color: var(--color-text-body); line-height: 1.5; }
+
+/* =========================================================================
+   5. ERROR EXPLORER FILTER STYLES & GRID
+   ========================================================================= */
+#cmeedApp .explorer-layout { display: grid; gap: 20px; }
+@media (min-width: 900px) { #cmeedApp .explorer-layout { grid-template-columns: 280px 1fr; align-items: start; } }
+
+#cmeedApp .sidebar { background: var(--color-bg-white); border: 1px solid var(--color-border); border-radius: var(--radius-lg); display: flex; flex-direction: column; position: sticky; top: 20px; max-height: calc(100vh - 40px); overflow-y: auto; }
+#cmeedApp .filter-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
+#cmeedApp .filter-group { display: flex; flex-direction: column; }
+#cmeedApp .filter-section-title { font-size: 0.75rem; font-weight: 700; color: var(--color-accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; border-bottom: 2px solid var(--color-border); padding-bottom: 4px; }
+
+#cmeedApp .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+#cmeedApp .filter-group-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* MOBILE FILTER EXCLUSIVE CONTROLS */
+#cmeedApp #mobileFilterToggle { display: none !important; }
+#cmeedApp .mobile-filter-header { display: none; }
+#cmeedApp .mobile-action-bar { display: none; }
+
+@media (max-width: 900px) {
+    #cmeedApp #mobileFilterToggle { display: inline-flex !important; margin: 0 auto; }
+    #cmeedApp .sidebar { 
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 5000; 
+        border-radius: 0; border: none; 
+        transform: translateY(100%); opacity: 0; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+        background: var(--color-bg-white); max-height: 100vh; overflow-y: auto;
+    }
+    #cmeedApp .sidebar.show { transform: translateY(0); opacity: 1; }
+    #cmeedApp .mobile-filter-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 1.5rem 0; border-bottom: none; }
+    #cmeedApp .mobile-action-bar { display: flex !important; gap: 10px; margin-top: auto; padding: 1.5rem; border-top: 1px solid var(--color-border); }
+    #cmeedApp .desktop-action-bar { display: none !important; }
+}
+
+#cmeedApp .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+#cmeedApp .compact-card { background: var(--color-bg-white); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 15px; display: flex; flex-direction: column; gap: 12px; transition: 0.2s; }
+#cmeedApp .compact-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--color-primary); }
+
+#cmeedApp .cc-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: nowrap; }
+#cmeedApp .cc-title { font-weight: 700; font-size: 1rem; color: var(--color-text-dark); margin: 0; word-break: break-word; line-height: 1.3; }
+#cmeedApp .cc-body { font-size: 0.85rem; color: var(--color-text-body); display: flex; flex-direction: column; gap: 4px; }
+#cmeedApp .cc-row { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--color-border); padding-bottom: 4px; }
+#cmeedApp .cc-row:last-child { border-bottom: none; }
+#cmeedApp .cc-val { font-family: var(--font-mono); font-weight: 600; color: var(--color-text-dark); }
+
+/* =========================================================================
+   6. RESEARCH TABLES & ZERO-HORIZONTAL-SCROLL MOBILE CSS
+   ========================================================================= */
+#cmeedApp .data-table-wrapper { 
+    background: var(--color-bg-white); 
+    border: 1px solid var(--color-border); 
+    border-radius: var(--radius-lg); 
+    width: 100%;
+}
+#cmeedApp .data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; text-align: left; }
+#cmeedApp .data-table th { padding: 12px 16px; background: var(--color-bg-light); border-bottom: 2px solid var(--color-border); color: var(--color-text-dark); font-weight: 700; white-space: nowrap; }
+#cmeedApp .data-table td { padding: 12px 16px; border-bottom: 1px solid var(--color-border); color: var(--color-text-body); }
+#cmeedApp .data-table tr:last-child td { border-bottom: none; }
+#cmeedApp .data-table tr:hover { background: var(--color-bg-light); }
+
+/* MODERN RESPONSIVE TABLES FOR MOBILE - ZERO HORIZONTAL SCROLL */
+@media (max-width: 900px) {
+    #cmeedApp .data-table-wrapper { border: none; background: transparent; }
+    #cmeedApp .data-table,
+    #cmeedApp .data-table thead,
+    #cmeedApp .data-table tbody,
+    #cmeedApp .data-table th,
+    #cmeedApp .data-table td,
+    #cmeedApp .data-table tr { display: block; width: 100%; }
+    
+    #cmeedApp .data-table thead tr { display: none; } 
+    
+    #cmeedApp .data-table tr { 
+        border: 1px solid var(--color-border); 
+        margin-bottom: 15px; 
+        border-radius: var(--radius-md); 
+        background: var(--color-bg-white); 
+        padding: 10px; 
+        box-shadow: var(--shadow-sm);
+    }
+    #cmeedApp .data-table tr:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); transition: 0.2s; }
+    
+    #cmeedApp .data-table td { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        border: none; 
+        border-bottom: 1px dashed var(--color-border); 
+        padding: 10px 0; 
+        text-align: right; 
+        font-size: 0.85rem;
+    }
+    #cmeedApp .data-table td:last-child { border-bottom: none; }
+    
+    #cmeedApp .data-table td::before { 
+        content: attr(data-label); 
+        font-weight: 700; 
+        color: var(--color-text-light); 
+        font-size: 0.75rem; 
+        text-transform: uppercase; 
+        text-align: left; 
+        flex: 1; 
+        padding-right: 15px; 
+    }
+    #cmeedApp .data-table td > * { flex: 2; text-align: right; justify-content: flex-end; }
+}
+
+/* =========================================================================
+   7. POSITION MODAL & TIMELINE
+   ========================================================================= */
+#cmeedApp .modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 6000; display: none; justify-content: center; align-items: center; padding: 1rem; }
+#cmeedApp .modal-backdrop.show { display: flex; }
+#cmeedApp .modal-content { background: var(--color-bg-modal); width: 100%; max-width: 950px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); display: flex; flex-direction: column; max-height: 95vh; }
+#cmeedApp .modal-header { padding: 1.5rem; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; }
+#cmeedApp .modal-body { padding: 1.5rem; overflow-y: auto; }
+
+#cmeedApp .pos-grid { display: grid; gap: 24px; }
+@media (min-width: 800px) { #cmeedApp .pos-grid { grid-template-columns: 360px 1fr; } }
+
+#modalChessboard .board-b72b1 { display: flex !important; flex-direction: column !important; border: 2px solid var(--color-border) !important; box-sizing: content-box !important; }
+#modalChessboard .row-5277c { display: flex !important; flex-direction: row !important; width: 100% !important; clear: none !important; margin: 0 !important; padding: 0 !important; line-height: 0 !important; }
+#modalChessboard .square-55d63 { position: relative !important; display: block !important; float: none !important; margin: 0 !important; padding: 0 !important; line-height: 0 !important; box-sizing: border-box !important; }
+#modalChessboard img { display: block !important; width: 100% !important; height: 100% !important; margin: 0 !important; padding: 0 !important; border: none !important; box-shadow: none !important; background: transparent !important; }
+
+#cmeedApp .compare-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+#cmeedApp .comp-box { padding: 15px; border-radius: var(--radius-md); border: 1px solid var(--color-border); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; background: var(--color-bg-light); }
+#cmeedApp .comp-box.played { border-color: #fca5a5; background: #fef2f2; }
+#cmeedApp .comp-box.best { border-color: #86efac; background: #f0fdf4; }
+#cmeedApp .comp-san { font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700; color: var(--color-text-dark); }
+
+#cmeedApp .metric-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+#cmeedApp .metric-box { padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--color-border); background: var(--color-bg-white); text-align: center; }
+#cmeedApp .metric-val { font-size: 1.2rem; font-family: var(--font-mono); font-weight: 700; color: var(--color-text-dark); }
+
+#cmeedApp .context-list { list-style: none; padding: 0; margin: 0; font-size: 0.9rem; background: var(--color-bg-light); border-radius: var(--radius-md); padding: 15px; border: 1px solid var(--color-border); }
+#cmeedApp .context-list li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--color-border); }
+#cmeedApp .context-list li:last-child { border-bottom: none; }
+
+#cmeedApp .timeline-container { margin-bottom: 20px; background: var(--color-bg-light); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 15px; }
+#cmeedApp .timeline-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-light); margin-bottom: 10px; }
+
+/* =========================================================================
+   8. DASHBOARD CHARTS & HEATMAP (MODERNIZED & FIXES)
+   ========================================================================= */
+#cmeedApp .dashboard-stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+#cmeedApp .dash-stat { background: var(--color-bg-white); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-sm); transition: transform 0.2s; }
+#cmeedApp .dash-stat:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--color-primary); }
+#cmeedApp .dash-stat-title { font-size: 0.75rem; font-weight: 700; color: var(--color-text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+#cmeedApp .dash-stat-val { font-size: 2rem; font-weight: 800; color: var(--color-text-dark); font-family: var(--font-mono); }
+#cmeedApp .dash-stat-sub { font-size: 0.85rem; color: var(--color-text-body); margin-top: 5px; }
+
+#cmeedApp .chart-container { background: var(--color-bg-white); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
+#cmeedApp .chart-title { font-size: 1.1rem; font-weight: 700; color: var(--color-text-dark); margin: 0 0 15px 0; border-bottom: 2px solid var(--color-border); padding-bottom: 8px; }
+#cmeedApp .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 0.85rem; }
+#cmeedApp .bar-label { width: 120px; font-weight: 600; color: var(--color-text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#cmeedApp .bar-track { flex: 1; height: 16px; background: var(--color-bg-light); border-radius: 8px; overflow: hidden; }
+#cmeedApp .bar-fill { height: 100%; background: var(--color-primary); border-radius: 8px; transition: width 0.5s; }
+#cmeedApp .bar-val { width: 50px; text-align: right; font-family: var(--font-mono); font-weight: 700; color: var(--color-text-dark); }
+
+#cmeedApp .heat { display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 8px; }
+#cmeedApp .cell { min-height: 54px; border-radius: 7px; background: var(--color-bg-light); color: var(--color-text-dark); display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 0.75rem; font-weight: 800; border: 1px solid var(--color-border); transition: transform 0.1s; }
+#cmeedApp .cell:hover { transform: scale(1.05); z-index: 2; box-shadow: var(--shadow-md); border-color: var(--color-primary); }
+#cmeedApp .cell b { font: 800 0.9rem var(--font-mono); margin-top: 2px; }
