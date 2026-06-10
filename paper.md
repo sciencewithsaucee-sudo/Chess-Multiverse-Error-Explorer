@@ -98,11 +98,13 @@ Several design elements support reproducible research:
 * Integrated methodological documentation.
 * Position-level validation of aggregate findings.
 
+To support analytical reliability, the platform includes an automated verification framework covering twelve core system layers, including Parquet ingestion, DuckDB relational projections, SQL filter generation, Expected Score Loss (ESL) validation, Opening Danger Index (ODI) verification, Panic Index calculations, material-signature matching, state serialization, export integrity, dashboard synchronization, chess move legality reconstruction, and performance benchmarking. The current regression suite executes sixteen automated tests with zero failures, providing continuous validation of both computational correctness and reproducibility-oriented functionality.
+
 The platform supports investigations spanning multiple domains, including chess cognition, behavioral analytics, expertise research, time-pressure decision-making, and sports analytics. By allowing researchers to move between aggregate statistical patterns and individual observations, the software facilitates both exploratory and hypothesis-driven workflows.
 
 To the author's knowledge, Chess Multiverse Error Explorer is among the first open research environments specifically designed for large-scale behavioral analysis of human chess errors rather than evaluation of chess positions themselves.
 
-The contribution lies not in any individual metric or visualization component but in the integration of reproducibility, behavioral analytics, and large-scale error exploration within a unified research framework.
+The contribution lies not in any individual metric or visualization component but in the integration of reproducibility, behavioral analytics, large-scale error exploration, and automated analytical verification within a unified research framework.
 
 # AI Usage Disclosure
 
