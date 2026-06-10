@@ -382,42 +382,86 @@
         </div>
     </div>
 
-    <div id="tab-methodology" class="tab-pane">
+<div id="tab-methodology" class="tab-pane">
         <button class="back-to-hub" onclick="switchTab('home')"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
         
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 350px), 1fr)); gap:20px;">
-            <div class="chart-container">
-                <h2 style="margin:0 0 10px;color:var(--color-text-dark);font-size:1.15rem">Platform Architecture & Purpose</h2>
-                <div style="background:var(--color-bg-light); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:15px; color:var(--color-text-body); line-height:1.55; font-size:0.95rem">
-                    <b>Chess Multiverse Error Explorer</b> is the definitive public research interface designed for deep cognitive and statistical analysis of human chess blunders. It parses the <b>CMEED v1.0</b> (Chess Multiverse Error &amp; Evaluation Dataset) using serverless DuckDB WASM SQL. This architecture executes lightning-fast, client-side queries, making it an essential, high-performance tool for data scientists, behavioral researchers, and elite grandmaster preparation.
+        <div style="max-width: 1000px; margin: 0 auto;">
+            <h2 style="margin-top:0; font-size: 2.2rem; color: var(--color-text-dark); letter-spacing: -0.5px;">Mathematical Framework & Derivations</h2>
+            <p style="color:var(--color-text-light); margin-bottom:30px; font-size: 1.1rem;">The theoretical foundation and derived metrics powering CMEED v1.0.</p>
+
+            <div class="chart-container" style="margin-bottom: 25px; padding: 30px;">
+                <h3 style="color:var(--color-primary); border-bottom: 2px solid var(--color-border); padding-bottom: 10px; margin-top:0;">1. Expected Score Loss (ESL)</h3>
+                <p style="line-height: 1.6; color: var(--color-text-body); font-size: 0.95rem;">Standard engine evaluations (measured in pawns) do not linearly correlate with game outcomes. A +2.0 advantage is massive at the grandmaster level, but the difference between +6.0 and +8.0 is negligible. To quantify human error accurately, CMEED converts raw engine evaluations into an Expected Score (ES) using a logistic function, representing the probability of winning.</p>
+                
+                <div style="background: var(--color-bg-light); padding: 20px; border-radius: var(--radius-md); text-align: center; margin: 20px 0; overflow-x: auto; border: 1px solid var(--color-border);">
+                    $$ES(e) = \frac{1}{1 + e^{-\frac{e}{k}}}$$
                 </div>
+                
+                <p style="line-height: 1.6; color: var(--color-text-body); font-size: 0.95rem;">Where \(k = 2.2\) is the scaling constant calibrated for elite human play. The <b>Expected Score Loss (ESL)</b> isolates the exact probabilistic damage a human makes in a single decision by calculating the delta between the optimal engine continuation and the played move:</p>
+                
+                <div style="background: var(--color-bg-light); padding: 20px; border-radius: var(--radius-md); text-align: center; margin: 20px 0; overflow-x: auto; border: 1px solid var(--color-border);">
+                    $$ESL = \max(0, ES(e_{before}) - ES(e_{after})) \times 100$$
+                </div>
+                
+                <p style="line-height: 1.6; color: var(--color-text-body); font-size: 0.95rem; margin-bottom:0;">This yields a percentage (0% to 100%) representing the exact amount of winning probability the player discarded.</p>
             </div>
 
-            <div class="chart-container">
-                <h2 style="margin:0 0 10px;color:var(--color-text-dark);font-size:1.15rem">Derived Mathematical Metrics</h2>
-                <div style="background:var(--color-bg-light); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:15px; color:var(--color-text-body); line-height:1.55; font-size:0.95rem">
-                    <b>Expected Score Loss (ESL):</b> Estimated mathematically using a logistic curve mapped over engine evaluation points.<br><br>
-                    <b>Opening Danger Index (ODI):</b> A composite grade evaluating opening volatility by combining error volume, blunder share, average evaluation drop, unique player count, and time-pressure frequency.<br><br>
-                    <b>Panic Index:</b> Isolates catastrophic evaluation loss specifically when human players have &lt; 60 seconds remaining on the clock.
+            <div class="chart-container" style="margin-bottom: 25px; padding: 30px;">
+                <h3 style="color:var(--color-primary); border-bottom: 2px solid var(--color-border); padding-bottom: 10px; margin-top:0;">2. Opening Danger Index (ODI)</h3>
+                <p style="line-height: 1.6; color: var(--color-text-body); font-size: 0.95rem;">The ODI is a proprietary composite metric designed to measure the inherent volatility and psychological difficulty of specific chess openings (categorized by ECO). It is a weighted sum of five normalized variables:</p>
+                
+                <div style="background: var(--color-bg-light); padding: 20px; border-radius: var(--radius-md); text-align: center; margin: 20px 0; overflow-x: auto; border: 1px solid var(--color-border);">
+                    $$ODI = \left( \sum_{i=1}^{5} w_i \cdot N_i \right) \times 100$$
                 </div>
+                
+                <ul style="line-height: 1.8; color: var(--color-text-body); padding-left: 20px; font-size: 0.95rem; margin-bottom:0;">
+                    <li><b>\(w_1 = 0.28\): Error Volume</b> \((E / E_{max})\) — Frequency of critical errors in this line.</li>
+                    <li><b>\(w_2 = 0.22\): Blunder Density</b> \((B / E)\) — The ratio of severe blunders to total errors.</li>
+                    <li><b>\(w_3 = 0.24\): Evaluation Magnitude</b> \((\min(\bar{\Delta e} / 4, 1))\) — Average evaluation drop, capped at 4.0 pawns.</li>
+                    <li><b>\(w_4 = 0.14\): Player Diversity</b> \((P / P_{max})\) — Ensures the errors are systemic to the opening, not isolated to a single player's bad tournament.</li>
+                    <li><b>\(w_5 = 0.12\): Time Pressure Frequency</b> — The percentage of errors occurring with under 60 seconds on the clock.</li>
+                </ul>
             </div>
 
-            <div class="chart-container" style="grid-column: 1 / -1; border-color: var(--color-primary); background: #f0fdfa;">
-                <h2 style="margin:0 0 15px;color:var(--color-text-dark);font-size:1.15rem"><i class="fa-solid fa-flask" style="color:var(--color-primary); margin-right:8px;"></i>Principal Investigator</h2>
+            <div class="chart-container" style="margin-bottom: 25px; padding: 30px;">
+                <h3 style="color:var(--color-primary); border-bottom: 2px solid var(--color-border); padding-bottom: 10px; margin-top:0;">3. Panic Index (Time-Pressure Collapse)</h3>
+                <p style="line-height: 1.6; color: var(--color-text-body); font-size: 0.95rem;">To isolate cognitive collapse from general positional misunderstanding, the Panic Index evaluates specific evaluation hemorrhage when the human clock parameter \(t\) drops below critical thresholds. Given a set of moves \(M\), the Panic Index is the arithmetic mean of evaluation drops strictly where \(t < 60\) seconds:</p>
+                
+                <div style="background: var(--color-bg-light); padding: 20px; border-radius: var(--radius-md); text-align: center; margin: 20px 0; overflow-x: auto; border: 1px solid var(--color-border);">
+                    $$PI_{<60} = \frac{1}{|M_{<60}|} \sum_{x \in M_{<60}} \Delta e_x$$
+                </div>
+                
+                <p style="line-height: 1.6; color: var(--color-text-body); font-size: 0.95rem; margin-bottom:0;">This allows researchers to profile which players maintain cognitive stability under extreme time distress and which openings induce the highest rate of clock-management failure.</p>
+            </div>
+
+            <div class="chart-container" style="margin-bottom: 25px; padding: 30px; border-left: 4px solid var(--color-primary);">
+                <h3 style="margin:0 0 15px; color:var(--color-text-dark); font-size: 1.3rem;"><i class="fa-solid fa-quote-right" style="color:var(--color-primary); margin-right:8px;"></i>Academic Citation</h3>
+                <p style="line-height: 1.6; color: var(--color-text-body); font-size: 0.95rem; margin-bottom: 15px;">If you utilize the Chess Multiverse Error Explorer or the underlying CMEED dataset in your research, please cite it as follows:</p>
+                
+                <div style="background: var(--color-bg-light); padding: 18px; border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.85rem; color: var(--color-text-dark); border: 1px solid var(--color-border);">
+                    Varshney, S. (2026). Chess Multiverse Error Evaluation Dataset (CMEED v1.0) and Explorer. Zenodo. <a href="https://doi.org/10.5281/zenodo.YOUR_DOI_HERE" target="_blank" class="cmeed-link">https://doi.org/10.5281/zenodo.YOUR_DOI_HERE</a>
+                </div>
+                <p style="color: var(--color-text-light); font-size: 0.8rem; margin-top: 10px; margin-bottom: 0;"><i>* Ensure you replace the placeholder DOI with your official Zenodo repository link upon publication.</i></p>
+            </div>
+
+            <div class="chart-container" style="border-color: var(--color-primary); background: #f0fdfa; padding: 30px; margin-bottom: 0;">
+                <h3 style="margin:0 0 15px;color:var(--color-text-dark); font-size: 1.3rem;"><i class="fa-solid fa-user-tie" style="color:var(--color-primary); margin-right:8px;"></i>Principal Investigator</h3>
                 <div style="display: flex; flex-direction: column; gap: 6px; color:var(--color-text-body); font-size:0.95rem;">
-                    <div><b style="font-size: 1.2rem; color: var(--color-text-dark);">Sparsh Varshney</b></div>
+                    <div><b style="font-size: 1.3rem; color: var(--color-text-dark);">Sparsh Varshney</b></div>
                     <div style="font-weight: 700; color: var(--color-text-light); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">Founder &bull; Data Scientist &bull; Researcher</div>
                     <div style="margin-top: 4px;">
                         <a href="https://orcid.org/0009-0004-7835-0673" target="_blank" class="cmeed-link" style="display:inline-flex; align-items:center; gap:5px;">
                             <i class="fa-brands fa-orcid" style="color:#a6ce39; font-size:1.2rem;"></i> ORCID: 0009-0004-7835-0673
                         </a>
                     </div>
-                    <div style="margin-top: 8px; line-height: 1.6;">
+                    <div style="margin-top: 12px; line-height: 1.6; border-top: 1px solid #ccfbf1; padding-top: 12px;">
                         The Chess Multiverse Error Explorer represents a dedicated effort to bridge the gap between heavy engine analytics and human cognitive constraints, providing a framework to quantify how and why elite chess players falter under pressure.
                     </div>
                 </div>
             </div>
 
+        </div>
+    </div>
             <div class="chart-container" style="grid-column: 1 / -1;">
                 <h2 style="margin:0 0 10px;color:var(--color-text-dark);font-size:1.15rem">Dataset Metadata</h2>
                 <div id="metadataDisplay" style="background:var(--color-bg-light); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:15px; color:var(--color-text-body); line-height:1.55; font-size:0.95rem">
