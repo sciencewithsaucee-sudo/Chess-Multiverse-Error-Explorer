@@ -11,7 +11,7 @@ window.appState = {
     filters: {
         type: 'all', minDrop: 0, open: '', player: '', event: '', 
         side: 'all', title: 'all', minElo: '', maxElo: '', time: 'all', 
-        year: 'all', phase: 'all', sort: '"e_change" DESC NULLS LAST', criticalOnly: false
+        year: 'all', phase: 'all', sort: 'e_change DESC', criticalOnly: false
     }
 };
 
@@ -52,7 +52,7 @@ window.hashSet = function() {
     p.set("tab", window.appState.tab);
     for(let k in window.appState.filters) {
         let v = window.appState.filters[k];
-        if(v && v !== 'all' && v !== false && v !== '"e_change" DESC NULLS LAST' && v !== 0) {
+        if(v && v !== 'all' && v !== false && v !== 'e_change DESC' && v !== 0) {
             p.set(k, String(v));
         }
     }
@@ -86,7 +86,7 @@ window.hashRead = function() {
             window.appState.filters[k] = v;
         }
     }
-    
+    // Repopulate UI Elements
     if(document.getElementById('fSearchOpen')) {
         document.getElementById('fSearchOpen').value = window.appState.filters.open || '';
         document.getElementById('fSearchPlayer').value = window.appState.filters.player || '';
@@ -99,6 +99,7 @@ window.hashRead = function() {
         document.getElementById('fTime').value = window.appState.filters.time || 'all';
         document.getElementById('fYear').value = window.appState.filters.year || 'all';
         document.getElementById('fPhase').value = window.appState.filters.phase || 'all';
+        document.getElementById('dbSort').value = window.appState.filters.sort || 'e_change DESC';
         
         if(window.appState.filters.criticalOnly) {
             document.getElementById('btnCritical').classList.add('btn-primary');
@@ -144,7 +145,7 @@ window.clearExplorerInputs = function() {
     window.appState.filters = {
         type: 'all', minDrop: 0, open: '', player: '', event: '', 
         side: 'all', title: 'all', minElo: '', maxElo: '', time: 'all', 
-        year: 'all', phase: 'all', sort: '"e_change" DESC NULLS LAST', criticalOnly: false
+        year: 'all', phase: 'all', sort: 'e_change DESC', criticalOnly: false
     };
     
     document.getElementById('fSearchOpen').value = '';
@@ -234,21 +235,21 @@ window.runNimzoTutorial = async function() {
     if (window.cmeedConn) {
         try {
             let panicQ = await window.execSQL(`
-                SELECT COUNT(*) as total, SUM(CASE WHEN "error_type"='Blunder' THEN 1 ELSE 0 END) as blunders
+                SELECT COUNT(*) as total, SUM(CASE WHEN error_type='Blunder' THEN 1 ELSE 0 END) as blunders
                 FROM cmeed 
-                WHERE "player_title" = 'GM' 
-                AND (LOWER("eco") LIKE '%nimzo-indian%' OR LOWER("opening") LIKE '%nimzo-indian%') 
-                AND "clock_sec" < 30
+                WHERE player_title = 'GM' 
+                AND (LOWER(eco) LIKE '%nimzo-indian%' OR LOWER(opening) LIKE '%nimzo-indian%') 
+                AND clock_sec < 30
             `);
             let panicStats = panicQ.toArray()[0].toJSON();
             let panicPct = panicStats.total > 0 ? ((Number(panicStats.blunders) / Number(panicStats.total)) * 100).toFixed(1) : "0.0";
 
             let baseQ = await window.execSQL(`
-                SELECT COUNT(*) as total, SUM(CASE WHEN "error_type"='Blunder' THEN 1 ELSE 0 END) as blunders
+                SELECT COUNT(*) as total, SUM(CASE WHEN error_type='Blunder' THEN 1 ELSE 0 END) as blunders
                 FROM cmeed 
-                WHERE "player_title" = 'GM' 
-                AND (LOWER("eco") LIKE '%nimzo-indian%' OR LOWER("opening") LIKE '%nimzo-indian%') 
-                AND "clock_sec" >= 900
+                WHERE player_title = 'GM' 
+                AND (LOWER(eco) LIKE '%nimzo-indian%' OR LOWER(opening) LIKE '%nimzo-indian%') 
+                AND clock_sec >= 900
             `);
             let baseStats = baseQ.toArray()[0].toJSON();
             let basePct = baseStats.total > 0 ? ((Number(baseStats.blunders) / Number(baseStats.total)) * 100).toFixed(1) : "0.0";
@@ -298,22 +299,22 @@ window.runCarlsenTutorial = async function() {
     if (window.cmeedConn) {
         try {
             let blackQ = await window.execSQL(`
-                SELECT COUNT(*) as total, AVG("e_change") as avg_loss
+                SELECT COUNT(*) as total, AVG(e_change) as avg_loss
                 FROM cmeed 
-                WHERE LOWER("player") LIKE '%carlsen%' 
-                AND "side" = 'black'
-                AND "clock_sec" < 60
-                AND "e_change" > 2.0
+                WHERE LOWER(player) LIKE '%carlsen%' 
+                AND side = 'black'
+                AND clock_sec < 60
+                AND e_change > 2.0
             `);
             let blackStats = blackQ.toArray()[0].toJSON();
 
             let whiteQ = await window.execSQL(`
-                SELECT COUNT(*) as total, AVG("e_change") as avg_loss
+                SELECT COUNT(*) as total, AVG(e_change) as avg_loss
                 FROM cmeed 
-                WHERE LOWER("player") LIKE '%carlsen%' 
-                AND "side" = 'white'
-                AND "clock_sec" < 60
-                AND "e_change" > 2.0
+                WHERE LOWER(player) LIKE '%carlsen%' 
+                AND side = 'white'
+                AND clock_sec < 60
+                AND e_change > 2.0
             `);
             let whiteStats = whiteQ.toArray()[0].toJSON();
 
@@ -352,18 +353,18 @@ window.extractTutorialDataset = async function(type) {
         let filename = "";
         if (type === 'nimzo') {
             q = `SELECT * FROM cmeed 
-                 WHERE "player_title" = 'GM' 
-                 AND (LOWER("eco") LIKE '%nimzo-indian%' OR LOWER("opening") LIKE '%nimzo-indian%') 
-                 AND "clock_sec" < 30 
-                 ORDER BY "e_change" DESC NULLS LAST LIMIT 3000`;
+                 WHERE player_title = 'GM' 
+                 AND (LOWER(eco) LIKE '%nimzo-indian%' OR LOWER(opening) LIKE '%nimzo-indian%') 
+                 AND clock_sec < 30 
+                 ORDER BY e_change DESC LIMIT 3000`;
             filename = 'cmeed_nimzo_panic_validation.csv';
         } else if (type === 'carlsen') {
             q = `SELECT * FROM cmeed 
-                 WHERE LOWER("player") LIKE '%carlsen%' 
-                 AND "side" = 'black'
-                 AND "clock_sec" < 60
-                 AND "e_change" > 2.0
-                 ORDER BY "e_change" DESC NULLS LAST LIMIT 3000`;
+                 WHERE LOWER(player) LIKE '%carlsen%' 
+                 AND side = 'black'
+                 AND clock_sec < 60
+                 AND e_change > 2.0
+                 ORDER BY e_change DESC LIMIT 3000`;
             filename = 'cmeed_carlsen_black_panic_validation.csv';
         }
         
@@ -503,25 +504,25 @@ async function initDuckDB() {
         `);
 
         loaderMsg.innerText = "Building Search Indexes...";
-        let qPlayers = await window.execSQL(`SELECT DISTINCT "player" FROM cmeed WHERE "player" IS NOT NULL ORDER BY "player"`);
+        let qPlayers = await window.execSQL(`SELECT DISTINCT player FROM cmeed WHERE player IS NOT NULL ORDER BY player`);
         let pArr = qPlayers.toArray().map(r => r.toJSON().player);
         document.getElementById('playerList').innerHTML = pArr.map(p => `<option value="${p.replace(/"/g, '&quot;')}">`).join('');
 
-        let qEvents = await window.execSQL(`SELECT DISTINCT "event" FROM cmeed WHERE "event" IS NOT NULL ORDER BY "event"`);
+        let qEvents = await window.execSQL(`SELECT DISTINCT event FROM cmeed WHERE event IS NOT NULL ORDER BY event`);
         let eArr = qEvents.toArray().map(r => r.toJSON().event);
         document.getElementById('eventList').innerHTML = eArr.map(e => `<option value="${e.replace(/"/g, '&quot;')}">`).join('');
 
-        let qEcos = await window.execSQL(`SELECT DISTINCT "eco", split_part("opening", ':', 1) as name FROM cmeed WHERE "eco" IS NOT NULL`);
+        let qEcos = await window.execSQL(`SELECT DISTINCT eco, split_part(opening, ':', 1) as name FROM cmeed WHERE eco IS NOT NULL`);
         let ecoArr = qEcos.toArray().map(r => r.toJSON());
         document.getElementById('ecoList').innerHTML = ecoArr.map(e => `<option value="${e.eco} - ${e.name.replace(/"/g, '&quot;')}">`).join('');
 
         loaderMsg.innerText = "Finalizing...";
 
         let countRes = await window.execSQL(`
-            SELECT COUNT(*) as c, COUNT(DISTINCT "game_id") as g, 
-                   MIN("year") as miny, MAX("year") as maxy, 
-                   MIN("date") as mind, MAX("date") as maxd, 
-                   COUNT(DISTINCT "source_file") as sf 
+            SELECT COUNT(*) as c, COUNT(DISTINCT game_id) as g, 
+                   MIN(year) as miny, MAX(year) as maxy, 
+                   MIN(date) as mind, MAX(date) as maxd, 
+                   COUNT(DISTINCT source_file) as sf 
             FROM cmeed
         `);
         let dataSummary = countRes.toArray()[0].toJSON();
@@ -548,7 +549,6 @@ async function initDuckDB() {
     }
 }
 
-// BULLETPROOF VALIDATION FOR SORT STRATEGY
 function readFilterInputsToState() {
     let rawOpen = document.getElementById('fSearchOpen').value;
     window.appState.filters.open = rawOpen.split(' - ')[0].trim(); 
@@ -563,68 +563,51 @@ function readFilterInputsToState() {
     window.appState.filters.year = document.getElementById('fYear').value;
     window.appState.filters.phase = document.getElementById('fPhase').value;
     
-    // Decouples HTML string matching from raw SQL injection
     let chosenSort = document.getElementById('dbSort').value;
-    let safeSort = '"e_change" DESC NULLS LAST';
-    if (chosenSort.includes('clock_sec')) safeSort = '"clock_sec" ASC NULLS LAST';
-    if (chosenSort.includes('m_number') && !chosenSort.includes('year')) safeSort = '"m_number" ASC NULLS LAST';
-    if (chosenSort.includes('year')) safeSort = '"year" DESC NULLS LAST, "m_number" ASC NULLS LAST';
-    
-    window.appState.filters.sort = safeSort;
+    window.appState.filters.sort = chosenSort ? chosenSort : 'e_change DESC';
 }
 
-// BULLETPROOF COLUMN WRAPPING & TYPE CHECKING
 function generateSQLFilterClause() {
     let rules = [];
     let f = window.appState.filters;
 
-    if (f.type && f.type !== 'all') rules.push(`"error_type" = '${f.type}'`);
-    
-    if (f.year && f.year !== 'all') {
-        let yr = parseInt(f.year);
-        if (!isNaN(yr)) rules.push(`TRY_CAST("year" AS INTEGER) = ${yr}`);
-    }
-    
-    if (f.phase && f.phase !== 'all') rules.push(`"opening_phase" = '${f.phase}'`);
-    if (f.side && f.side !== 'all') rules.push(`"side" = '${f.side}'`);
+    if (f.type && f.type !== 'all') rules.push(`error_type = '${f.type}'`);
+    if (f.year && f.year !== 'all') rules.push(`TRY_CAST(year AS INTEGER) = ${parseInt(f.year)}`);
+    if (f.phase && f.phase !== 'all') rules.push(`opening_phase = '${f.phase}'`);
+    if (f.side && f.side !== 'all') rules.push(`side = '${f.side}'`);
     
     if (f.title && f.title !== 'all') {
-        if (f.title === 'None') rules.push(`("player_title" = '' OR "player_title" IS NULL)`);
-        else rules.push(`"player_title" = '${f.title}'`);
+        if (f.title === 'None') rules.push(`(player_title = '' OR player_title IS NULL)`);
+        else rules.push(`player_title = '${f.title}'`);
     }
     
-    let mElo = parseInt(f.minElo);
-    if (!isNaN(mElo) && mElo > 0) rules.push(`"p_elo" >= ${mElo}`);
-    
-    let xElo = parseInt(f.maxElo);
-    if (!isNaN(xElo) && xElo < 4000) rules.push(`"p_elo" <= ${xElo}`);
-    
-    let mDrop = parseFloat(f.minDrop);
-    if (!isNaN(mDrop) && mDrop > 0) rules.push(`"e_change" >= ${mDrop}`);
+    if (f.minElo && parseInt(f.minElo) > 0) rules.push(`p_elo >= ${parseInt(f.minElo)}`);
+    if (f.maxElo && parseInt(f.maxElo) < 4000) rules.push(`p_elo <= ${parseInt(f.maxElo)}`);
+    if (f.minDrop && parseFloat(f.minDrop) > 0) rules.push(`e_change >= ${parseFloat(f.minDrop)}`);
     
     if (f.criticalOnly) {
-        rules.push(`"is_critical" = true`);
+        rules.push(`is_critical = true`);
     }
     
     if (f.open) {
-        let s = f.open.toLowerCase().replace(/'/g, "''").replace(/\\/g, "\\\\");
-        rules.push(`(LOWER("eco") LIKE '%${s}%' OR LOWER("opening") LIKE '%${s}%')`);
+        let s = f.open.toLowerCase().replace(/'/g, "''");
+        rules.push(`(LOWER(eco) LIKE '%${s}%' OR LOWER(opening) LIKE '%${s}%')`);
     }
     if (f.player) {
-        let s = f.player.toLowerCase().replace(/'/g, "''").replace(/\\/g, "\\\\");
-        rules.push(`LOWER("player") LIKE '%${s}%'`);
+        let s = f.player.toLowerCase().replace(/'/g, "''");
+        rules.push(`LOWER(player) LIKE '%${s}%'`);
     }
     if (f.event) {
-        let s = f.event.toLowerCase().replace(/'/g, "''").replace(/\\/g, "\\\\");
-        rules.push(`LOWER("event") LIKE '%${s}%'`);
+        let s = f.event.toLowerCase().replace(/'/g, "''");
+        rules.push(`LOWER(event) LIKE '%${s}%'`);
     }
 
     if (f.time && f.time !== 'all') {
-        if (f.time === '30s') rules.push(`"clock_sec" < 30`);
-        if (f.time === '60s') rules.push(`"clock_sec" >= 30 AND "clock_sec" < 60`);
-        if (f.time === '5m') rules.push(`"clock_sec" >= 60 AND "clock_sec" < 300`);
-        if (f.time === '15m') rules.push(`"clock_sec" >= 300 AND "clock_sec" < 900`);
-        if (f.time === '15m+') rules.push(`"clock_sec" >= 900`);
+        if (f.time === '30s') rules.push(`clock_sec < 30`);
+        if (f.time === '60s') rules.push(`clock_sec >= 30 AND clock_sec < 60`);
+        if (f.time === '5m') rules.push(`clock_sec >= 60 AND clock_sec < 300`);
+        if (f.time === '15m') rules.push(`clock_sec >= 300 AND clock_sec < 900`);
+        if (f.time === '15m+') rules.push(`clock_sec >= 900`);
     }
 
     return rules.length ? 'WHERE ' + rules.join(' AND ') : '';
@@ -639,8 +622,7 @@ window.runExplorerFilters = async function() {
 };
 
 window.changePage = async function(dir) {
-    // Ensures expPage can never fall below 1 and create a negative SQL offset
-    window.expPage = Math.max(1, window.expPage + dir);
+    window.expPage += dir;
     await window.loadExplorerPage();
 };
 
@@ -648,13 +630,16 @@ window.loadExplorerPage = async function() {
     if (!window.cmeedConn) return;
     try {
         const whereClause = generateSQLFilterClause();
-        let sortStrategy = window.appState.filters.sort || '"e_change" DESC NULLS LAST';
+        
+        let sortStrategy = window.appState.filters.sort;
+        if (!sortStrategy || sortStrategy.includes('eval_change')) {
+             sortStrategy = 'e_change DESC';
+        }
 
         let countQuery = await window.execSQL(`SELECT COUNT(*) as total FROM cmeed ${whereClause}`);
         window.totalExpCount = Number(countQuery.toArray()[0].toJSON().total);
         
-        // Zero-clamped offset math ensures it never breaks the query
-        let paginationOffset = Math.max(0, (window.expPage - 1) * window.expPageSize);
+        let paginationOffset = (window.expPage - 1) * window.expPageSize;
         let mainQuery = `SELECT * FROM cmeed ${whereClause} ORDER BY ${sortStrategy} LIMIT ${window.expPageSize} OFFSET ${paginationOffset}`;
         
         let queryResults = await window.execSQL(mainQuery);
@@ -708,9 +693,9 @@ function renderExplorerCards(records) {
     let totalPagesCount = Math.ceil(window.totalExpCount / window.expPageSize);
     let paginationHtmlMarkup = '';
     if(totalPagesCount > 1) {
-        paginationHtmlMarkup += `<button class="btn btn-xs" ${window.expPage<=1?'disabled':''} onclick="changePage(-1)">Prev</button>`;
+        paginationHtmlMarkup += `<button class="btn btn-xs" ${window.expPage===1?'disabled':''} onclick="changePage(-1)">Prev</button>`;
         paginationHtmlMarkup += `<span style="font-size:0.85rem;font-weight:600;padding:0 8px;align-self:center;">Page ${window.expPage}/${totalPagesCount}</span>`;
-        paginationHtmlMarkup += `<button class="btn btn-xs" ${window.expPage>=totalPagesCount?'disabled':''} onclick="changePage(1)">Next</button>`;
+        paginationHtmlMarkup += `<button class="btn btn-xs" ${window.expPage===totalPagesCount?'disabled':''} onclick="changePage(1)">Next</button>`;
     }
     document.getElementById('explorerPager').innerHTML = paginationHtmlMarkup;
 }
@@ -719,26 +704,26 @@ window.renderAtlas = async function() {
     if (!window.cmeedConn) return;
     try {
         let qStr = document.getElementById('atlasSearch').value.toLowerCase().replace(/'/g, "''");
-        let searchWhereClause = qStr ? `WHERE LOWER("eco") LIKE '%${qStr}%' OR LOWER("opening") LIKE '%${qStr}%'` : '';
+        let searchWhereClause = qStr ? `WHERE LOWER(eco) LIKE '%${qStr}%' OR LOWER(opening) LIKE '%${qStr}%'` : '';
         
         let sortMap = { 
-            'errors': '"errors" DESC NULLS LAST', 
-            'blunders': '"blunders" DESC NULLS LAST', 
-            'drop': '"avg_loss" DESC NULLS LAST', 
-            'diff': '"odi" DESC NULLS LAST' 
+            'errors': 'errors DESC', 
+            'blunders': 'blunders DESC', 
+            'drop': 'avg_loss DESC', 
+            'diff': 'odi DESC' 
         };
-        let s = sortMap[document.getElementById('atlasSort').value] || '"errors" DESC NULLS LAST';
+        let s = sortMap[document.getElementById('atlasSort').value] || 'errors DESC';
 
         let mappingSqlQuery = `
-            SELECT "eco", split_part("opening", ':', 1) as name, 
+            SELECT eco, split_part(opening, ':', 1) as name, 
                    COUNT(*) as errors, 
-                   SUM(CASE WHEN "error_type"='Blunder' THEN 1 ELSE 0 END) as blunders, 
-                   AVG("e_change") as avg_loss,
-                   COUNT(DISTINCT "player") as players,
-                   AVG(CASE WHEN "clock_sec" < 60 THEN 1 ELSE 0 END) as pressure
+                   SUM(CASE WHEN error_type='Blunder' THEN 1 ELSE 0 END) as blunders, 
+                   AVG(e_change) as avg_loss,
+                   COUNT(DISTINCT player) as players,
+                   AVG(CASE WHEN clock_sec < 60 THEN 1 ELSE 0 END) as pressure
             FROM cmeed 
             ${searchWhereClause}
-            GROUP BY "eco", split_part("opening", ':', 1) 
+            GROUP BY eco, split_part(opening, ':', 1) 
         `;
         let outputRecords = await window.execSQL(mappingSqlQuery);
         let entriesArray = outputRecords.toArray().map(r => r.toJSON());
@@ -757,10 +742,10 @@ window.renderAtlas = async function() {
             return {...r, bp, odi};
         });
 
-        if(s.includes('errors')) entriesArray.sort((a,b) => Number(b.errors) - Number(a.errors));
-        if(s.includes('blunders')) entriesArray.sort((a,b) => Number(b.blunders) - Number(a.blunders));
-        if(s.includes('avg_loss')) entriesArray.sort((a,b) => Number(b.avg_loss) - Number(a.avg_loss));
-        if(s.includes('odi')) entriesArray.sort((a,b) => b.odi - a.odi);
+        if(s === 'errors DESC') entriesArray.sort((a,b) => Number(b.errors) - Number(a.errors));
+        if(s === 'blunders DESC') entriesArray.sort((a,b) => Number(b.blunders) - Number(a.blunders));
+        if(s === 'avg_loss DESC') entriesArray.sort((a,b) => Number(b.avg_loss) - Number(a.avg_loss));
+        if(s === 'odi DESC') entriesArray.sort((a,b) => b.odi - a.odi);
 
         entriesArray = entriesArray.slice(0, 800);
 
@@ -782,20 +767,20 @@ window.renderEvents = async function() {
     if (!window.cmeedConn) return;
     try {
         let qStr = document.getElementById('eventSearch').value.toLowerCase().replace(/'/g, "''");
-        let searchWhereClause = qStr ? `WHERE LOWER("event") LIKE '%${qStr}%'` : '';
+        let searchWhereClause = qStr ? `WHERE LOWER(event) LIKE '%${qStr}%'` : '';
         
-        let sortMap = { 'errors': '"errors" DESC NULLS LAST', 'blunders': '"blunders" DESC NULLS LAST', 'drop': '"avg_loss" DESC NULLS LAST' };
-        let s = sortMap[document.getElementById('eventSort').value] || '"errors" DESC NULLS LAST';
+        let sortMap = { 'errors': 'errors DESC', 'blunders': 'blunders DESC', 'drop': 'avg_loss DESC' };
+        let s = sortMap[document.getElementById('eventSort').value];
 
         let eventSummaryQuery = `
-            SELECT "event", "year", 
+            SELECT event, year, 
                    COUNT(*) as errors, 
-                   SUM(CASE WHEN "error_type"='Blunder' THEN 1 ELSE 0 END) as blunders, 
-                   AVG("e_change") as avg_loss,
-                   AVG(CASE WHEN "clock_sec" < 60 THEN 1 ELSE 0 END) as pressure
+                   SUM(CASE WHEN error_type='Blunder' THEN 1 ELSE 0 END) as blunders, 
+                   AVG(e_change) as avg_loss,
+                   AVG(CASE WHEN clock_sec < 60 THEN 1 ELSE 0 END) as pressure
             FROM cmeed 
             ${searchWhereClause}
-            GROUP BY "event", "year" 
+            GROUP BY event, year 
             ORDER BY ${s} LIMIT 1000
         `;
         let resultsCollection = await window.execSQL(eventSummaryQuery);
@@ -818,21 +803,21 @@ window.renderPlayerProfiles = async function() {
     if (!window.cmeedConn) return;
     try {
         let searchFilterString = document.getElementById('profileSearch').value.toLowerCase().replace(/'/g, "''");
-        let criteriaScope = searchFilterString ? `WHERE LOWER("player") LIKE '%${searchFilterString}%'` : '';
+        let criteriaScope = searchFilterString ? `WHERE LOWER(player) LIKE '%${searchFilterString}%'` : '';
         
-        let sortMap = { 'errors DESC': '"errors" DESC NULLS LAST', 'blunders DESC': '"blunders" DESC NULLS LAST', 'avg_loss DESC': '"avg_loss" DESC NULLS LAST' };
-        let s = sortMap[document.getElementById('playerSort').value] || '"errors" DESC NULLS LAST';
+        let sortMap = { 'errors DESC': 'errors DESC', 'blunders DESC': 'blunders DESC', 'avg_loss DESC': 'avg_loss DESC' };
+        let s = sortMap[document.getElementById('playerSort').value] || 'errors DESC';
 
         let profilingQueryString = `
-            SELECT "player_title", "player", MAX("p_elo") as elo, 
+            SELECT player_title, player, MAX(p_elo) as elo, 
                    COUNT(*) as errors, 
-                   SUM(CASE WHEN "error_type"='Blunder' THEN 1 ELSE 0 END) as blunders, 
-                   AVG("e_change") as avg_loss,
-                   AVG(CASE WHEN "clock_sec" < 60 THEN "e_change" ELSE NULL END) as panic_loss,
-                   mode("eco") as topOp
+                   SUM(CASE WHEN error_type='Blunder' THEN 1 ELSE 0 END) as blunders, 
+                   AVG(e_change) as avg_loss,
+                   AVG(CASE WHEN clock_sec < 60 THEN e_change ELSE NULL END) as panic_loss,
+                   mode(eco) as topOp
             FROM cmeed 
             ${criteriaScope}
-            GROUP BY "player_title", "player" 
+            GROUP BY player_title, player 
             ORDER BY ${s} LIMIT 100
         `;
         let resultsTable = await window.execSQL(profilingQueryString);
@@ -862,8 +847,8 @@ window.renderDashboard = async function() {
     if (!window.cmeedConn) return;
     try {
         let dashStatsQuery = await window.execSQL(`
-            SELECT COUNT(*) as c, COUNT(DISTINCT "game_id") as g,
-                   COUNT(DISTINCT "player") as p, COUNT(DISTINCT "eco") as o
+            SELECT COUNT(*) as c, COUNT(DISTINCT game_id) as g,
+                   COUNT(DISTINCT player) as p, COUNT(DISTINCT eco) as o
             FROM cmeed
         `);
         let dStats = dashStatsQuery.toArray()[0].toJSON();
@@ -872,7 +857,7 @@ window.renderDashboard = async function() {
         document.getElementById('dashTotPlayers').innerText = Number(dStats.p).toLocaleString();
         document.getElementById('dashTotOpenings').innerText = Number(dStats.o).toLocaleString();
 
-        let phaseQueryResultObj = await window.execSQL(`SELECT "opening_phase" as k, COUNT(*) as v FROM cmeed WHERE "opening_phase" IN ('Opening', 'Middlegame', 'Endgame') GROUP BY k ORDER BY v DESC`);
+        let phaseQueryResultObj = await window.execSQL(`SELECT opening_phase as k, COUNT(*) as v FROM cmeed WHERE opening_phase IN ('Opening', 'Middlegame', 'Endgame') GROUP BY k ORDER BY v DESC`);
         let phaseRowsData = phaseQueryResultObj.toArray().map(r => r.toJSON());
         let aggregationsTotalPhases = Math.max(1, phaseRowsData.reduce((sum, item) => sum + Number(item.v), 0));
         document.getElementById('chartPhase').innerHTML = phaseRowsData.map(dataElement => {
@@ -881,7 +866,7 @@ window.renderDashboard = async function() {
             return `<div class="bar-row"><div class="bar-label">${dataElement.k}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.max(2, specificRowPercentage)}%"></div></div><div class="bar-val" style="width:70px">${niceVal}</div></div>`;
         }).join('');
 
-        let severityQueryResultObj = await window.execSQL(`SELECT "error_type" as k, COUNT(*) as v FROM cmeed WHERE "error_type" IN ('Blunder', 'Mistake', 'Inaccuracy') GROUP BY k ORDER BY v DESC`);
+        let severityQueryResultObj = await window.execSQL(`SELECT error_type as k, COUNT(*) as v FROM cmeed WHERE error_type IN ('Blunder', 'Mistake', 'Inaccuracy') GROUP BY k ORDER BY v DESC`);
         let severityRowsData = severityQueryResultObj.toArray().map(r => r.toJSON());
         let aggregationsTotalSeverities = Math.max(1, severityRowsData.reduce((sum, item) => sum + Number(item.v), 0));
         document.getElementById('chartSeverity').innerHTML = severityRowsData.map(dataElement => {
@@ -892,9 +877,9 @@ window.renderDashboard = async function() {
         }).join('');
 
         let pressureQueryExpression = `
-            SELECT "clock_bucket" as k, AVG("e_change") as a, MIN("clock_sec") as order_col
+            SELECT clock_bucket as k, AVG(e_change) as a, MIN(clock_sec) as order_col
             FROM cmeed
-            WHERE "clock_bucket" != 'Unknown' AND "e_change" IS NOT NULL
+            WHERE clock_bucket != 'Unknown' AND e_change IS NOT NULL
             GROUP BY 1 ORDER BY 3
         `;
         let pressureQueryResultObj = await window.execSQL(pressureQueryExpression);
@@ -907,7 +892,7 @@ window.renderDashboard = async function() {
             return `<div class="bar-row"><div class="bar-label">${bucket.k}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.max(2, dynamicBarLengthWidth)}%; background:var(--color-text-dark);"></div></div><div class="bar-val" style="width:50px">${val.toFixed(2)}</div></div>`;
         }).join('');
 
-        let colorQuery = await window.execSQL(`SELECT "side" as k, COUNT(*) as v FROM cmeed WHERE "side" IN ('white', 'black') GROUP BY k ORDER BY v DESC`);
+        let colorQuery = await window.execSQL(`SELECT side as k, COUNT(*) as v FROM cmeed WHERE side IN ('white', 'black') GROUP BY k ORDER BY v DESC`);
         let colorData = colorQuery.toArray().map(r => r.toJSON());
         let maxColor = Math.max(...colorData.map(c => Number(c.v)), 1);
         document.getElementById('chartColorBias').innerHTML = colorData.map(c => {
@@ -916,7 +901,7 @@ window.renderDashboard = async function() {
             return `<div class="bar-row"><div class="bar-label" style="text-transform:capitalize;">${c.k}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%; background:var(--color-success);"></div></div><div class="bar-val" style="width:70px">${niceVal}</div></div>`;
         }).join('');
 
-        let heatQuery = `SELECT CAST(FLOOR("m_number"/5)*5 AS INTEGER) AS bucket, COUNT(*) AS c FROM cmeed WHERE "m_number" IS NOT NULL GROUP BY bucket ORDER BY bucket LIMIT 24`;
+        let heatQuery = `SELECT CAST(FLOOR(m_number/5)*5 AS INTEGER) AS bucket, COUNT(*) AS c FROM cmeed WHERE m_number IS NOT NULL GROUP BY bucket ORDER BY bucket LIMIT 24`;
         let heatObj = await window.execSQL(heatQuery);
         let heatData = heatObj.toArray().map(r => r.toJSON());
         let maxHeat = Math.max(...heatData.map(r => Number(r.c)), 1);
@@ -933,3 +918,149 @@ window.renderDashboard = async function() {
         document.getElementById('chartHeatmap').innerHTML = "<div style='color:var(--color-danger);'>Dashboard elements failed to render. Check console for SQL query errors.</div>";
     }
 };
+
+window.openPositionModal = async function(id) {
+    if (!window.cmeedConn) return;
+    let positionalQueryResults = await window.execSQL(`SELECT * FROM cmeed WHERE error_id = '${id}'`);
+    let specificRowsCollection = positionalQueryResults.toArray().map(r => r.toJSON());
+    if(specificRowsCollection.length === 0) return;
+    
+    window.currentError = specificRowsCollection[0];
+    let targetErrorRecord = window.currentError;
+    window.detailGame = new Chess(targetErrorRecord.fen_before);
+
+    let structuralTitleString = (targetErrorRecord.player_title && targetErrorRecord.player_title !== 'None' && targetErrorRecord.player_title !== 'null') ? targetErrorRecord.player_title + ' ' : '';
+    document.getElementById('mTitle').innerText = `${targetErrorRecord.error_type} by ${structuralTitleString}${targetErrorRecord.player}`;
+    document.getElementById('mSubtitle').innerHTML = `${targetErrorRecord.side==='white'?'White':'Black'} to move &bull; Ply ${targetErrorRecord.error_ply}`;
+    
+    document.getElementById('mPlayed').innerText = targetErrorRecord.played_move + (targetErrorRecord.error_type==='Blunder'?'??':'?');
+    document.getElementById('mBest').innerText = targetErrorRecord.best_move;
+    
+    let evalB = Number(targetErrorRecord.e_before||0);
+    let evalA = Number(targetErrorRecord.e_after||0);
+    
+    document.getElementById('mESL').innerHTML = window.calcEsl(evalB, evalA, targetErrorRecord.side).toFixed(1) + "%";
+    document.getElementById('mClock').innerText = window.formatClock(targetErrorRecord.clock_sec);
+
+    document.getElementById('mEvent').innerText = targetErrorRecord.event;
+    document.getElementById('mOpening').innerText = `${targetErrorRecord.eco} ${targetErrorRecord.opening}`;
+    
+    let wEl = document.getElementById('mWhite'); wEl.innerText = `${targetErrorRecord.white} (${targetErrorRecord.white_elo})`; wEl.setAttribute('data-name', targetErrorRecord.white);
+    let bEl = document.getElementById('mBlack'); bEl.innerText = `${targetErrorRecord.black} (${targetErrorRecord.black_elo})`; bEl.setAttribute('data-name', targetErrorRecord.black);
+
+    document.getElementById('mResult').innerText = targetErrorRecord.result;
+    
+    document.getElementById('similarContainer').style.display = 'none';
+
+    window.renderTimeline(evalB, evalA, targetErrorRecord.move_number);
+
+    document.getElementById('modalBackdrop').classList.add('show');
+    document.body.style.overflow = 'hidden';
+
+    setTimeout(() => {
+        if(window.detailBoard) window.detailBoard.destroy();
+        window.detailBoard = Chessboard('modalChessboard', {
+            pieceTheme: 'https://cdn.jsdelivr.net/gh/oakmac/chessboardjs@1.0.0/website/img/chesspieces/wikipedia/{piece}.png',
+            position: targetErrorRecord.fen_before,
+            orientation: targetErrorRecord.side,
+            draggable: true,
+            onDragStart: window.onDragStart,
+            onDrop: window.onDrop,
+            onSnapEnd: window.onSnapEnd
+        });
+    }, 50);
+};
+
+window.renderTimeline = function(e1, e2, moveNum) {
+    let visualBoundaryClamp1 = Math.max(-10, Math.min(10, e1));
+    let visualBoundaryClamp2 = Math.max(-10, Math.min(10, e2));
+    let plottedVerticalY1 = 50 - (visualBoundaryClamp1 * 4);
+    let plottedVerticalY2 = 50 - (visualBoundaryClamp2 * 4);
+    
+    let graphSvgCodeMarkup = `
+    <svg viewBox="0 0 300 100" width="100%" height="100%" preserveAspectRatio="none" style="background:var(--color-bg-white); border-radius:4px; border:1px solid var(--color-border);">
+        <line x1="0" y1="50" x2="300" y2="50" stroke="var(--color-border)" stroke-dasharray="4" stroke-width="2"/>
+        <text x="5" y="45" fill="var(--color-text-light)" font-size="10" font-family="sans-serif">0.0</text>
+        <line x1="50" y1="${plottedVerticalY1}" x2="250" y2="${plottedVerticalY2}" stroke="var(--color-danger)" stroke-width="3"/>
+        <circle cx="50" cy="${plottedVerticalY1}" r="5" fill="var(--color-text-dark)" />
+        <text x="50" y="${plottedVerticalY1 - 10}" fill="var(--color-text-dark)" font-size="12" font-weight="bold" font-family="sans-serif" text-anchor="middle">${e1 > 0 ? '+'+e1.toFixed(1) : e1.toFixed(1)}</text>
+        <text x="50" y="${plottedVerticalY1 + 18}" fill="var(--color-text-light)" font-size="10" font-family="sans-serif" text-anchor="middle">Move ${moveNum}</text>
+        <circle cx="250" cy="${plottedVerticalY2}" r="6" fill="var(--color-danger)" />
+        <text x="250" y="${plottedVerticalY2 - 12}" fill="var(--color-danger)" font-size="12" font-weight="bold" font-family="sans-serif" text-anchor="middle">${e2 > 0 ? '+'+e2.toFixed(1) : e2.toFixed(1)}</text>
+        <text x="250" y="${plottedVerticalY2 + 20}" fill="var(--color-text-light)" font-size="10" font-family="sans-serif" text-anchor="middle">Played</text>
+    </svg>
+    `;
+    document.getElementById('mTimelineSvg').innerHTML = graphSvgCodeMarkup;
+};
+
+window.playModalLine = function(type) {
+    if(!window.detailGame || !window.currentError) return;
+    window.detailGame.load(window.currentError.fen_before);
+    
+    let TargetMoveNotationSan = type === 'played' ? window.currentError.played_move : window.currentError.best_move;
+    let successfulExecutionMoveObj = window.detailGame.move(TargetMoveNotationSan);
+    if(successfulExecutionMoveObj) {
+        window.detailBoard.position(window.detailGame.fen());
+    } else if(type === 'played' && window.currentError.fen_after) {
+        window.detailBoard.position(window.currentError.fen_after);
+    }
+};
+
+window.resetPositionBoard = function() {
+    if(!window.detailGame || !window.currentError || !window.detailBoard) return;
+    window.detailGame.load(window.currentError.fen_before);
+    window.detailBoard.position(window.currentError.fen_before);
+};
+
+window.findSimilarMaterial = async function() {
+    if(!window.currentError || !window.cmeedConn) return;
+    const container = document.getElementById('similarContainer');
+    container.style.display = 'block';
+    container.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Searching DuckDB for similar material structures...';
+    
+    let key = window.getMaterialKey(window.currentError.fen_before);
+    let q = `SELECT error_id, player, error_type, eco, move_number, eval_change, fen_before FROM cmeed WHERE opening_phase='${window.currentError.opening_phase.replace(/'/g,"''")}' AND side='${window.currentError.side}' ORDER BY eval_change DESC LIMIT 2500`;
+    let res = await window.execSQL(q);
+    let data = res.toArray().map(r=>r.toJSON());
+    let matches = data.filter(r => r.error_id !== window.currentError.error_id && window.getMaterialKey(r.fen_before) === key).slice(0,8);
+    
+    if(matches.length){
+        container.innerHTML = `<div style="font-weight:700; margin-bottom:8px;">${matches.length} similar material configurations found:</div>` + 
+            matches.map(m => `<div><b class="cmeed-link" onclick="openPositionModal('${m.error_id}')">${m.player}</b> &mdash; ${m.error_type} in ${m.eco} (Move ${m.move_number})</div>`).join('');
+    } else {
+        container.innerHTML = 'No exact material matches found in the current sampled phase slice.';
+    }
+};
+
+window.exportData = async function(format = 'csv') {
+    if (!window.cmeedConn) return;
+    try {
+        const currentActiveWhereClause = generateSQLFilterClause();
+        
+        let sortStrategy = window.appState.filters.sort;
+        if (!sortStrategy || sortStrategy.includes('eval_change')) { sortStrategy = 'e_change DESC'; }
+
+        let exportSqlQueryExpression = `SELECT * FROM cmeed ${currentActiveWhereClause} ORDER BY ${sortStrategy} LIMIT 3000`;
+        let outputDataTable = await window.execSQL(exportSqlQueryExpression);
+        let rows = outputDataTable.toArray().map(r => r.toJSON());
+        
+        if(format === 'md') {
+            let md = ["# CMX Decision Lab Research Brief\n", `Dataset: Chess Multiverse Error & Evaluation Dataset (CMEED v1.0)`, `Generated: ${new Date().toISOString()}`, `Filtered records exported: ${rows.length}\n`, "## Top 10 Examples\n"];
+            rows.slice(0,10).forEach((r,i) => {
+                md.push(`${i+1}. **${r.player}**, ${r.error_type}, ${r.event} (${r.year}), move ${r.move_number}: Played **${r.played_move}** instead of **${r.best_move}**; Expected Score Loss: **${window.calcEsl(r.e_before, r.e_after, r.side).toFixed(1)}%**. FEN: \`${r.fen_before}\``);
+            });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([md.join("\n")], { type: 'text/markdown' })); a.download = 'cmeed_brief.md'; a.click();
+            return;
+        }
+
+        let csvStringDataOutput = "ID,Player,Elo,Event,Opening,Move,Played,Best,EvalChange,Clock\n";
+        rows.forEach(o => csvStringDataOutput += `${o.error_id},"${o.player}",${Number(o.p_elo)},"${o.event}","${o.eco}",${Number(o.m_number)},${o.played_move},${o.best_move},${Number(o.e_change)},${Number(o.clock_sec)}\n`);
+        const auxiliaryDownloadAnchor = document.createElement('a'); 
+        auxiliaryDownloadAnchor.href = URL.createObjectURL(new Blob([csvStringDataOutput], { type: 'text/csv' })); 
+        auxiliaryDownloadAnchor.download = 'cmeed_export.csv'; 
+        auxiliaryDownloadAnchor.click();
+    } catch(err) { console.error("Export Error:", err); }
+};
+
+// Run Initialization Pipeline
+initDuckDB();
