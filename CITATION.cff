@@ -1,4 +1,3 @@
-```yaml
 cff-version: 1.2.0
 
 title: "Chess Multiverse Error Explorer"
@@ -71,4 +70,3 @@ references:
     title: "Chess Multiverse Error & Evaluation Dataset (CMEED v1.0)"
     year: 2026
     doi: "10.5281/zenodo.20625716"
-```
