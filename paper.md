@@ -17,7 +17,7 @@ affiliations:
 - index: 1
   name: Chess Multiverse Lab
 date: 10 June 2026
-bibliography: paper.bib
+bibliography: biblio.bib
 repository-code: "https://github.com/sciencewithsaucee-sudo/Chess-Multiverse-Error-Explorer"
 url: 'https://www.chessmultiverse.org/p/chess-multiverse-error-explorer.html'
 ---
@@ -58,7 +58,7 @@ Existing chess software ecosystems are primarily optimized for competitive impro
 By contrast, `Chess Multiverse Error Explorer` focuses on descriptive questions concerning human performance.
 
 Several characteristics distinguish the platform from conventional chess-analysis software:
-1. The software is built around a dedicated behavioral dataset rather than a general game collection.
+1. The software is built around a dedicated behavioral dataset rather than a general game collection [@lichess].
 2. Analytical workflows are reproducible through URL-based state preservation and shareable research configurations.
 3. The platform introduces specialized behavioral metrics including Expected Score Loss (ESL), Opening Danger Index (ODI), and Panic Index.
 4. The software integrates aggregate statistical analysis with position-level investigation.
@@ -68,7 +68,7 @@ Rather than competing with traditional chess-analysis software, `Chess Multivers
 
 # Software Design & Implementation
 
-The software follows a reproducibility-oriented architecture built around DuckDB WebAssembly (WASM) and Apache Parquet. Upon initialization, the client application loads the CMEED dataset, registers the Parquet file within DuckDB's virtual filesystem, and constructs analytical views used throughout the platform. This design allows relational analytics to be executed directly within the research environment while avoiding dependence on external or dedicated database server infrastructure.
+The software follows a reproducibility-oriented architecture built around DuckDB WebAssembly (WASM) [@duckdb2024] and Apache Parquet [@parquet]. Upon initialization, the client application loads the CMEED dataset, registers the Parquet file within DuckDB's virtual filesystem, and constructs analytical views used throughout the platform. This design allows relational analytics to be executed directly within the research environment while avoiding dependence on external or dedicated database server infrastructure.
 
 A central architectural decision was the use of dynamic analytical views. During initialization, evaluation fields are normalized, player-specific variables are derived, and time-control categories are generated automatically. This approach reduces preprocessing requirements while maintaining flexibility for exploratory analysis.
 
@@ -78,7 +78,7 @@ The platform additionally incorporates reproducibility mechanisms through URL se
 
 ### Mathematical Formulations
 
-Several behavioral metrics are implemented directly within the analytical framework. Expected Score Loss ($ESL$) quantifies practical damage resulting from a decision by transforming evaluation changes into changes in expected game outcome. The Expected Score ($ES$) for a given engine evaluation $e$ is calculated using a calibrated logistic function:
+Several behavioral metrics are implemented directly within the analytical framework and rendered interactively using MathJax [@mathjax]. Expected Score Loss ($ESL$) quantifies practical damage resulting from a decision by transforming evaluation changes into changes in expected game outcome. The Expected Score ($ES$) for a given engine evaluation $e$ is calculated using a calibrated logistic function:
 
 $$ES(e) = \frac{1}{1 + e^{-e/2.2}}$$
 
@@ -102,9 +102,9 @@ The software also includes a material-signature similarity engine. By extracting
 
 # Research Impact & Verification
 
-`Chess Multiverse Error Explorer` was developed alongside the Chess Multiverse Error & Evaluation Dataset (CMEED v1.0) [@cmeed_dataset], which contains nearly one million documented human errors extracted from competitive chess games. The software contributes open research infrastructure rather than merely visualization; its primary contribution is the transformation of large-scale behavioral chess data into a reproducible analytical environment that lowers technical barriers to empirical investigation.
+`Chess Multiverse Error Explorer` was developed alongside the Chess Multiverse Error & Evaluation Dataset (CMEED v1.0) [@cmeed2026], which contains nearly one million documented human errors extracted from competitive chess games. The software contributes open research infrastructure rather than merely visualization; its primary contribution is the transformation of large-scale behavioral chess data into a reproducible analytical environment that lowers technical barriers to empirical investigation.
 
-To support analytical reliability and satisfy software validation requirements, the platform includes an automated verification framework covering twelve core system layers. These decoupled verification layers include Parquet ingestion parsing, DuckDB relational projections, SQL filter compilation, mathematical formula validation ($ESL$, $ODI$, and Panic Index), material-signature matching, state serialization, export integrity, dashboard reactive state synchronization, chess move legality reconstruction via `chess.js`, and execution performance benchmarking. The current regression suite executes sixteen automated tests natively inside the browser environment with an execution threshold benchmark under 100 ms, providing continuous validation of both computational correctness and reproducibility-oriented functionality.
+To support analytical reliability and satisfy software validation requirements, the platform includes an automated verification framework covering twelve core system layers. These decoupled verification layers include Parquet ingestion parsing, DuckDB relational projections, SQL filter compilation, mathematical formula validation ($ESL$, $ODI$, and Panic Index), material-signature matching, state serialization, export integrity, dashboard reactive state synchronization, chess move legality reconstruction via `chess.js` [@chessjs], chess board UI state matching via `chessboard.js` [@chessboardjs], and execution performance benchmarking. The current regression suite executes sixteen automated tests natively inside the browser environment with an execution threshold benchmark under 100 ms, providing continuous validation of both computational correctness and reproducibility-oriented functionality.
 
 The platform supports investigations spanning multiple domains, including chess cognition, behavioral analytics, expertise research, time-pressure decision-making, and sports analytics. By allowing researchers to move smoothly between aggregate statistical patterns and individual observations, the software facilitates both exploratory and hypothesis-driven workflows. To the author's knowledge, `Chess Multiverse Error Explorer` is among the first open research environments specifically designed for large-scale behavioral analysis of human chess errors rather than the evaluation of chess positions themselves.
 
