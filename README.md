@@ -1,5 +1,6 @@
 # Chess Multiverse Error Explorer
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20681955.svg)](https://doi.org/10.5281/zenodo.20681955)
 ![Architecture](https://img.shields.io/badge/Architecture-Single_Page_Application-blue.svg)
 ![DuckDB](https://img.shields.io/badge/SQL_Engine-DuckDB_WASM_v1.29.0-yellow.svg)
 ![Chessboard.js](https://img.shields.io/badge/Chessboard-Chessboard.js_v1.0.0-green.svg)
@@ -557,11 +558,11 @@ If this software contributes to your research, please cite both the software and
 ```text
 Varshney, S. (2026).
 
-Chess Multiverse Error Explorer (Version 1.0) [Computer software].
+Chess Multiverse Error Explorer (Version 1.0.0) [Computer software].
 
-GitHub.
+Zenodo.
 
-https://github.com/sciencewithsaucee-sudo/Chess-Multiverse-Error-Evaluation-Dataset-CMEED-
+https://doi.org/10.5281/zenodo.20681955
 ```
 
 ## Dataset Citation
