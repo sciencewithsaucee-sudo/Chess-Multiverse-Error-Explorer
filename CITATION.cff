@@ -17,6 +17,8 @@ version: "1.0.0"
 
 date-released: "2026-06-13"
 
+doi: "10.5281/zenodo.20681955"
+
 license: "MIT"
 
 repository-code: "https://github.com/sciencewithsaucee-sudo/Chess-Multiverse-Error-Explorer"
@@ -58,8 +60,8 @@ preferred-citation:
   title: "Chess Multiverse Error Explorer"
   version: "1.0.0"
   year: 2026
-  publisher: "GitHub"
-  repository-code: "https://github.com/sciencewithsaucee-sudo/Chess-Multiverse-Error-Explorer"
+  doi: "10.5281/zenodo.20681955"
+  publisher: "Zenodo"
 
 references:
   - type: dataset
