@@ -80,35 +80,40 @@ No server-side database is required.
 # 📁 Repository Structure
 
 ```text
+├── Tests/
+│   ├── test.js
+│   └── test.html
 ├── src/
 │   ├── css/
 │   │   └── style.css
 │   └── js/
 │       └── app.js
-├── Tests/
-│   ├── test.js
-│   └── test.html
 ├── index.html
-├── README.md
-├── LICENSE
-├── biblio.bib
+├── CODE_OF_CONDUCT.md
 ├── CONTRIBUTING.md
-└── CODE_OF_CONDUCT.md
+├── LICENSE
+├── README.md
+├── biblio.bib
+└── paper.md
 ```
 
 ## File Overview
 
-| File / Directory | Description |
-|-----------------|-------------|
-| index.html | Main application entry point |
-| src/css/style.css | Application styling and responsive layout |
-| src/js/app.js | Core analytical engine, DuckDB integration, filtering, dashboards, and routing |
-| Tests/ | Automated verification framework and unit tests |
-| README.md | Project documentation |
-| LICENSE | MIT License |
-| biblio.bib | BibTeX bibliography file for citations and research references |
-| CONTRIBUTING.md | Guidelines for community contributions |
-| CODE_OF_CONDUCT.md | Community standards and rules of behavior |
+| File / Directory   | Description                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------------- |
+| index.html         | Main application entry point                                                                            |
+| src/css/style.css  | Application styling and responsive layout                                                               |
+| src/js/app.js      | Core analytical engine, DuckDB integration, filtering, dashboards, visualizations, exports, and routing |
+| Tests/test.js      | Automated verification suite covering analytical and platform modules                                   |
+| Tests/test.html    | Browser-based test runner                                                                               |
+| README.md          | Project documentation and usage guide                                                                   |
+| LICENSE            | MIT License                                                                                             |
+| biblio.bib         | BibTeX bibliography for software and dataset citations                                                  |
+| CONTRIBUTING.md    | Guidelines for community contributions                                                                  |
+| CODE_OF_CONDUCT.md | Community standards and expected behavior                                                               |
+| paper.md           | Project paper and research software description                                                         |
+
+
 
 ---
 
