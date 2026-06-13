@@ -18,7 +18,7 @@ Unlike traditional chess databases that focus primarily on move quality, the Err
 Launch the production application:
 
 **Live URL:**
-`[www.chessmultiverse.org/p/chess-multiverse-error-explorer.html](https://www.chessmultiverse.org/p/chess-multiverse-error-explorer.html)`
+www.chessmultiverse.org/p/chess-multiverse-error-explorer.html
 
 ---
 
