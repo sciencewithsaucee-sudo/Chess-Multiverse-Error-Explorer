@@ -1,132 +1,97 @@
 # Chess Multiverse Error Explorer
 
-[![Architecture](https://img.shields.io/badge/Architecture-Single_Page_Application-blue.svg)]()
-[![DuckDB](https://img.shields.io/badge/SQL_Engine-DuckDB_WASM_v1.29.0-yellow.svg)](https://duckdb.org/)
-[![Chessboard.js](https://img.shields.io/badge/Chessboard-Chessboard.js_v1.0.0-green.svg)](https://chessboardjs.com/)
-[![Routing](https://img.shields.io/badge/State_Engine-Hash_Routing-orange.svg)]()
+![Architecture](https://img.shields.io/badge/Architecture-Single_Page_Application-blue.svg)
+![DuckDB](https://img.shields.io/badge/SQL_Engine-DuckDB_WASM_v1.29.0-yellow.svg)
+![Chessboard.js](https://img.shields.io/badge/Chessboard-Chessboard.js_v1.0.0-green.svg)
+![Tests](https://img.shields.io/badge/Verification-16_Tests_Passing-success.svg)
 
-A browser-native research platform for large-scale analysis of human chess errors, cognitive collapse under time pressure, opening complexity, and behavioral decision-making patterns.
+A browser-native analytical platform for large-scale research into human chess errors, time-pressure collapse, opening instability, and behavioral decision-making.
 
-The **Chess Multiverse Error Explorer** is built on top of the **Chess Multiverse Error & Evaluation Dataset (CMEED v1.0)** and utilizes **DuckDB WASM** to perform server-grade analytical queries directly inside the user's browser without requiring any backend infrastructure.
+The **Chess Multiverse Error Explorer** is powered by the **Chess Multiverse Error & Evaluation Dataset (CMEED v1.0)** and uses **DuckDB WASM** to execute analytical SQL workloads entirely inside the browser, eliminating the need for backend infrastructure.
 
-Unlike traditional chess databases that focus primarily on move quality, the Error Explorer focuses on **why strong players fail**, enabling reproducible research into human error generation across elite chess.
-
----
-
-## 🚀 Live Application
-
-Launch the production application:
-
-**Live URL:**
-www.chessmultiverse.org/p/chess-multiverse-error-explorer.html
+Unlike conventional chess databases that focus primarily on move quality, the Error Explorer focuses on the generation of human error and provides tools for reproducible behavioral chess research.
 
 ---
 
-## 🎯 Research Objectives
+# 🚀 Live Application
 
-The platform is designed to support research into:
+**Production Deployment**
 
-* Human decision errors
-* Cognitive degradation under pressure
-* Time-management failures
-* Opening complexity analysis
-* Evaluation-loss modeling
-* Player vulnerability profiling
-* Tournament pressure studies
-* Behavioral chess analytics
-* Reproducible computational research
+https://www.chessmultiverse.org/p/chess-multiverse-error-explorer.html
+
+---
+
+# 🎯 Research Objectives
+
+The platform supports investigations into:
+
+- Human decision errors
+- Time-pressure collapse
+- Evaluation-loss modeling
+- Opening complexity
+- Behavioral vulnerability profiling
+- Tournament pressure effects
+- Elite player error generation
+- Computational chess analytics
+- Reproducible chess research
 
 ---
 
 # 🏗 Architecture
 
-The application follows a fully client-side analytical architecture.
-
 ```text
 Browser
 │
-├── DuckDB WASM
-│
-├── Web Worker Thread
-│
-├── CMEED Parquet Dataset
-│
-├── Chess.js Engine
-│
-├── Chessboard.js Interface
-│
-├── MathJax Renderer
-│
-└── Hash-Based State Routing
+├── UI Layer (Chessboard.js)
+├── State Layer (Hash Routing)
+├── Analytics Layer (DuckDB WASM)
+├── Processing Layer (Web Workers)
+├── Dataset Layer (Apache Parquet)
+└── Mathematics Layer (MathJax)
 ```
 
-All computation occurs locally within the browser.
+All analytical computation occurs locally within the user's browser.
 
 No server-side database is required.
 
 ---
 
-# 🛠 Technology Stack
+# ⚙ Technology Stack
 
-| Layer              | Technology           |
-| ------------------ | -------------------- |
-| Database Engine    | DuckDB WASM v1.29.0  |
-| Dataset Format     | Apache Parquet       |
-| Chess Rules Engine | chess.js v0.10.3     |
-| Board Renderer     | chessboard.js v1.0.0 |
-| Mathematics        | MathJax v3           |
-| State Management   | URL Hash Routing     |
-| Deployment         | Static Hosting       |
-| Analytics Layer    | SQL Query Engine     |
-| Data Processing    | Browser Web Workers  |
-
----
-
-## 📁 Repository Structure
-
-```text.
-├── src
-│   ├── css
-│   │   └── style.css
-│   └── js
-│       └── app.js
-├── index.html
-├── README.md
-└── LICENSE
-
-```
-
-### File Overview
-
-| File                | Description                                                                    |
-| ------------------- | ------------------------------------------------------------------------------ |
-| `index.html`        | Main application entry point                                                   |
-| `src/css/style.css` | Application styling and responsive layout                                      |
-| `src/js/app.js`     | Core analytical engine, DuckDB integration, filtering, dashboards, and routing |
-| `README.md`         | Project documentation                                                          |
-| `LICENSE`           | MIT License                                                                    |
+| Component | Technology |
+|------------|------------|
+| Database Engine | DuckDB WASM v1.29.0 |
+| Dataset Format | Apache Parquet |
+| Chess Engine | chess.js |
+| Board Renderer | chessboard.js |
+| Mathematics | MathJax v3 |
+| Routing | URL Hash Routing |
+| Processing | Browser Web Workers |
+| Deployment | Static Hosting |
 
 ---
+
 # 📊 Dataset
 
-The software is powered by:
+The platform is powered by:
 
 ## CMEED v1.0
 
-**Chess Multiverse Error & Evaluation Dataset**
+### Chess Multiverse Error & Evaluation Dataset
 
-Features:
+### Included Data
 
-* Nearly 1 million human errors
-* Engine evaluation changes
-* Clock metadata
-* Opening classifications
-* Event metadata
-* Player metadata
-* Behavioral metrics
-* Position snapshots
+- Human error records
+- Engine evaluations
+- Evaluation deltas
+- Clock metadata
+- Opening classifications
+- Event metadata
+- Player metadata
+- Position snapshots
+- Behavioral indicators
 
-Dataset DOI:
+### DOI
 
 https://doi.org/10.5281/zenodo.20625716
 
@@ -134,169 +99,124 @@ https://doi.org/10.5281/zenodo.20625716
 
 # 🧩 Research Modules
 
-## 1. Error Explorer
+## Error Explorer
 
-The central analytical environment of the platform.
+Central analytical environment for error discovery and filtering.
 
-### Capabilities
+### Features
 
-* Severity filtering
-* Critical moment detection
-* Rating-based analysis
-* Player filtering
-* Event filtering
-* Opening filtering
-* Time-pressure analysis
-* Phase analysis
-* SQL-driven sorting
-* CSV export
-* Markdown export
+- Error severity filtering
+- Critical-position identification
+- Player analysis
+- Event analysis
+- Opening analysis
+- Time-pressure filtering
+- SQL-powered sorting
+- CSV export
+- Markdown export
+- Reproducible deep links
 
-### Supported Error Types
+### Error Categories
 
-* Inaccuracy
-* Mistake
-* Blunder
-
-### Advanced Features
-
-* Critical position extraction
-* Evaluation-drop thresholds
-* Deep-link reproducibility
-* Interactive position inspection
-* Similar-error exploration
+- Inaccuracy
+- Mistake
+- Blunder
 
 ---
 
-## 2. Opening Atlas
+## Opening Atlas
 
 Opening-specific behavioral analysis engine.
 
 ### Metrics
 
-* Error volume
-* Blunder percentage
-* Average evaluation loss
-* Pressure frequency
-* Opening Danger Index (ODI)
+- Error volume
+- Blunder frequency
+- Average evaluation loss
+- Time-pressure frequency
+- Opening Danger Index (ODI)
 
 ### Research Questions
 
-Examples:
-
-* Which openings generate the most blunders?
-* Which openings become unstable under time pressure?
-* Which ECO families produce the highest evaluation loss?
+- Which openings generate the most blunders?
+- Which openings become unstable under time pressure?
+- Which ECO families exhibit the highest evaluation loss?
 
 ---
 
-## 3. Event Explorer
+## Event Explorer
 
-Tournament-level analytical environment.
+Tournament-level behavioral analytics.
 
 ### Metrics
 
-* Total errors
-* Blunder rates
-* Average evaluation loss
-* Time-pressure frequency
+- Total errors
+- Blunder counts
+- Average evaluation loss
+- Pressure frequency
 
 ### Applications
 
-* Broadcast analysis
-* Tournament comparison
-* Event pressure studies
-* Competitive environment research
+- Tournament comparison
+- Broadcast analysis
+- Competitive pressure studies
 
 ---
 
-## 4. Player Profiles
+## Player Profiles
 
-Behavioral profiling system for individual players.
+Behavioral profiling system.
 
 ### Metrics
 
-* Error frequency
-* Blunder counts
-* Average evaluation loss
-* Panic Index
-* Preferred openings
-* Vulnerability patterns
-
-### Applications
-
-* Elite player studies
-* Comparative behavioral analysis
-* Individual weakness identification
+- Error frequency
+- Blunder counts
+- Average evaluation loss
+- Panic Index
+- Preferred openings
+- Vulnerability patterns
 
 ---
 
-## 5. Research Dashboard
+## Research Dashboard
 
-Interactive statistical aggregation module.
+Interactive aggregate statistics.
 
 ### Included Visualizations
 
-#### Error Phase Distribution
-
-* Opening
-* Middlegame
-* Endgame
-
-#### Severity Distribution
-
-* Inaccuracy
-* Mistake
-* Blunder
-
-#### Time Pressure Analysis
-
-Relationship between:
-
-* Clock remaining
-* Evaluation loss
-
-#### Color Bias Analysis
-
-Comparison of:
-
-* White-side errors
-* Black-side errors
-
-#### Move Heatmap
-
-Distribution of errors across move numbers.
+- Phase Distribution
+- Severity Distribution
+- Time Pressure Analysis
+- Color Bias Analysis
+- Error Heatmaps
 
 ---
 
-## 6. Methodology Framework
+## Methodology Framework
 
-The application includes a complete research methodology layer.
+Integrated documentation for:
 
-### Included Topics
-
-* Expected Score Loss (ESL)
-* Opening Danger Index (ODI)
-* Panic Index
-* Metric derivations
-* Reproducibility tutorials
-* Validation workflows
-* Citation guidance
+- Expected Score Loss (ESL)
+- Opening Danger Index (ODI)
+- Panic Index
+- Reproducibility workflows
+- Validation procedures
+- Citation guidance
 
 ---
 
 # ⚡ DuckDB-Powered Analytics
 
-The application dynamically generates SQL from user-selected filters.
+The platform dynamically generates SQL from user-selected filters.
 
-Example:
+### Example
 
 ```sql
 ABS(eval_before) <= 1.25
 AND eval_change >= 1.50
 ```
 
-Queries are executed directly inside DuckDB WASM.
+Queries execute directly inside DuckDB WASM.
 
 No server communication is required.
 
@@ -304,33 +224,31 @@ No server communication is required.
 
 # 🔗 Reproducible Deep Linking
 
-The platform maintains analytical state through URL serialization.
+Analytical state is serialized into URLs.
 
 Researchers can:
 
-1. Configure filters
-2. Copy URL
-3. Share findings
-4. Reproduce exact views
+- Configure filters
+- Share findings
+- Preserve exact analytical states
+- Reproduce previous analyses
 
-This supports transparent and reproducible computational research.
+This supports transparent computational research workflows.
 
 ---
 
 # ♟ Interactive Position Analysis
 
-The platform contains a dedicated position-inspection environment.
+Included functionality:
 
-Features include:
-
-* Interactive chessboard
-* Move replay
-* FEN export
-* Best-move comparison
-* Played-move comparison
-* Evaluation timeline
-* Expected Score Loss display
-* Lichess integration
+- Interactive chessboard
+- Position replay
+- FEN export
+- Best-move comparison
+- Played-move comparison
+- Evaluation timeline
+- Expected Score Loss calculation
+- Lichess integration
 
 ---
 
@@ -338,115 +256,100 @@ Features include:
 
 ## Expected Score Function
 
-[
+Winning probability model:
+
+```math
 ES(e)=\frac{1}{1+e^{-e/2.2}}
-]
+```
 
 Where:
 
-* (e) represents engine evaluation
-* 2.2 is the calibration constant
+- `e` = engine evaluation
+- `2.2` = calibration constant
 
 ---
 
 ## Expected Score Loss (ESL)
 
-[
+Percentage of winning probability lost through a human decision:
+
+```math
 ESL=
-\max
-\left(
-0,
-ES(e_{before})
---------------
-
-ES(e_{after})
-\right)
+\max(0, ES(e_{before}) - ES(e_{after}))
 \times100
-]
-
-ESL measures the percentage of winning probability lost through a single human decision.
+```
 
 ---
 
 ## Opening Danger Index (ODI)
 
-[
+Behavioral risk metric for opening families:
+
+```math
 ODI=
 \left(
 \sum_{i=1}^{5}
 w_iN_i
 \right)
 \times100
-]
+```
 
-Components:
+Where:
 
-| Variable                | Weight |
-| ----------------------- | ------ |
-| Error Volume            | 0.28   |
-| Blunder Density         | 0.22   |
-| Evaluation Magnitude    | 0.24   |
-| Player Diversity        | 0.14   |
-| Time Pressure Frequency | 0.12   |
+- `wᵢ` = normalized component weight
+- `Nᵢ` = normalized component score
 
-ODI quantifies the behavioral risk associated with specific opening families.
+### Components
+
+| Component | Weight |
+|------------|--------|
+| Error Volume | 0.28 |
+| Blunder Density | 0.22 |
+| Evaluation Magnitude | 0.24 |
+| Player Diversity | 0.14 |
+| Time Pressure Frequency | 0.12 |
 
 ---
 
 ## Panic Index
 
-For moves played under severe time pressure:
+Average evaluation collapse under severe time pressure:
 
-[
+```math
 PI_{<60}
-========
-
+=
 \frac{1}{|M_{<60}|}
 \sum_{x\in M_{<60}}
 \Delta e_x
-]
-
-This metric measures evaluation collapse when less than 60 seconds remain on the clock.
+```
 
 ---
 
 # 🔬 Reproducibility Tutorials
 
-The platform contains built-in case studies demonstrating hypothesis validation.
+## Example Study 1
 
-### Example Study 1
+**Hypothesis**
 
-Hypothesis:
+> Grandmaster blunder rates in Nimzo-Indian structures increase significantly when the clock drops below 30 seconds.
 
-> Grandmaster blunder rates in hypermodern openings increase significantly when the clock drops below 30 seconds.
+---
 
-### Example Study 2
+## Example Study 2
 
-Hypothesis:
+**Hypothesis**
 
-> Magnus Carlsen exhibits measurable evaluation loss vulnerability while defending difficult positions under severe time pressure.
+> Magnus Carlsen exhibits measurable evaluation-loss vulnerability while defending difficult positions under severe time pressure.
 
-Researchers can automatically generate validation subsets and export datasets for independent verification.
+*These examples are included for methodological demonstration and hypothesis-testing workflows.*
 
 ---
 
 # 📁 Installation
 
-Because the application depends on:
-
-* WebAssembly
-* Web Workers
-* Browser Fetch APIs
-
-it cannot be executed using:
-
-```text
-file://
-```
+Because the platform relies on WebAssembly, Web Workers, and browser fetch APIs, it cannot be executed through the local `file://` protocol.
 
 A local web server is required.
-
----
 
 ## Clone Repository
 
@@ -458,13 +361,23 @@ cd Chess-Multiverse-Error-Evaluation-Dataset-CMEED-
 
 ---
 
-## Start Local Server
+## Launch Local Server
 
-Python:
+### Python
 
 ```bash
-python -m http.server 8000
+python3 -m http.server 8000
 ```
+
+### Node.js
+
+```bash
+npx serve
+```
+
+### VS Code
+
+Install the **Live Server** extension and click **Go Live**.
 
 ---
 
@@ -478,139 +391,66 @@ http://localhost:8000
 
 # 📤 Export Support
 
-The application supports:
+Supported exports:
 
-* CSV Export
-* Markdown Brief Export
-* Shareable URLs
-* FEN Export
+- CSV
+- Markdown Research Briefs
+- Shareable URLs
+- FEN
 
 ---
+
 # 🧪 Automated Verification Framework
 
-The Chess Multiverse Error Explorer includes a dedicated automated regression and validation framework designed to verify analytical correctness, reproducibility, and computational stability across the platform.
-
-Current status:
+Current verification status:
 
 ```text
-16 Tests Passing
+16 Automated Verification Tests
 0 Failures
-12 Core System Layers Verified
+12 Platform Modules Verified
 ```
 
-### Validation Coverage
+### Verification Coverage
 
-#### Module 1: Parquet Ingestion Layer
+1. Parquet Ingestion Layer
+2. DuckDB Relational Projections
+3. Dynamic SQL Filter Compiler
+4. Expected Score Loss Framework
+5. Opening Danger Index Framework
+6. Panic Index Framework
+7. Material Signature Search
+8. Reproducibility Layer
+9. Export Systems
+10. Dashboard Synchronization
+11. Position Replay Engine
+12. Performance Benchmarks
 
-* Dataset loading verification
-* Binary fetch validation
-* Schema integrity checks
-
-#### Module 2: DuckDB Relational Projections
-
-* Runtime view construction
-* Clock bucket classification
-* Numeric evaluation casting
-
-#### Module 3: Dynamic SQL Filter Compiler
-
-* Complex filter generation
-* Multi-variable query validation
-* Analytical protocol enforcement
-
-#### Module 4: Expected Score Loss (ESL)
-
-* Probability transformation validation
-* Evaluation-loss calculations
-* Edge-case handling
-
-#### Module 5: Opening Danger Index (ODI)
-
-* Composite risk-score calculations
-* Weight consistency verification
-* Numerical stability testing
-
-#### Module 6: Panic Index Framework
-
-* Time-pressure aggregation logic
-* Evaluation variance calculations
-* Threshold validation
-
-#### Module 7: Material Signature Search
-
-* Structural position matching
-* Material isomorphism validation
-* False-positive prevention
-
-#### Module 8: Reproducibility Layer
-
-* URL state serialization
-* State deserialization
-* Deep-link integrity checks
-
-#### Module 9: Export Systems
-
-* CSV generation
-* UTF-8 validation
-* Record-alignment verification
-
-#### Module 10: Dashboard Synchronization
-
-* UI aggregation validation
-* Database consistency checks
-* Reactive state verification
-
-#### Module 11: Position Replay Engine
-
-* FEN reconstruction
-* Chess.js legality verification
-* Move replay validation
-
-#### Module 12: Performance Benchmarks
-
-* DuckDB query latency testing
-* Asynchronous execution validation
-* Runtime stability checks
-
-### Benchmark Results
-
-| Metric               | Result |
-| -------------------- | ------ |
-| Total Tests          | 16     |
-| Failures             | 0      |
-| Verification Layers  | 12     |
-| Benchmark Query Time | 88 ms  |
-
-The verification framework provides continuous validation of both research-oriented analytical metrics and software infrastructure components, supporting reproducibility and reliability across all major platform subsystems.
+The verification suite validates analytical correctness, reproducibility workflows, mathematical consistency, and core platform infrastructure.
 
 ---
 
 # 📖 Citation
 
-If this software contributes to your research, please cite both the software and the underlying dataset.
+If this software contributes to your research, please cite both the software and the dataset.
 
-## Software Citation
+## Software
 
 ```text
 Varshney, S. (2026).
 
 Chess Multiverse Error Explorer
-[Computer software].
+(Version 1.0) [Computer software].
 
 GitHub.
-
-https://github.com/sciencewithsaucee-sudo/Chess-Multiverse-Error-Evaluation-Dataset-CMEED-
 ```
 
----
-
-## Dataset Citation
+## Dataset
 
 ```text
 Varshney, S. (2026).
 
-Chess Multiverse Error & Evaluation Dataset (CMEED v1.0)
-[Data set].
+Chess Multiverse Error & Evaluation Dataset
+(CMEED v1.0) [Data set].
 
 Zenodo.
 
@@ -621,18 +461,16 @@ https://doi.org/10.5281/zenodo.20625716
 
 # 📜 License
 
-This project is released under the MIT License.
+Released under the MIT License.
 
-You are free to:
+You may:
 
-* Use
-* Modify
-* Distribute
-* Commercialize
+- Use
+- Modify
+- Distribute
+- Commercialize
 
 the software provided that the original license and copyright notice remain included.
-
-See the LICENSE file for details.
 
 ---
 
@@ -642,15 +480,15 @@ See the LICENSE file for details.
 
 Founder, Chess Multiverse Lab
 
-ORCID: 0009-0004-7835-0673
+**ORCID:** 0009-0004-7835-0673
 
-Research Interests:
+### Research Interests
 
-* Chess Analytics
-* Cognitive Performance Modeling
-* Human Error Research
-* Computational Behavioral Science
-* Open Research Infrastructure
+- Chess Analytics
+- Human Error Research
+- Computational Behavioral Science
+- Cognitive Performance Modeling
+- Open Research Infrastructure
 
 ---
 
