@@ -1,0 +1,74 @@
+```yaml
+cff-version: 1.2.0
+
+title: "Chess Multiverse Error Explorer"
+
+message: >
+  If you use this software in research, teaching, publications,
+  or derivative works, please cite it using the metadata below.
+
+type: software
+
+authors:
+  - family-names: "Varshney"
+    given-names: "Sparsh"
+    orcid: "https://orcid.org/0009-0004-7835-0673"
+
+version: "1.0.0"
+
+date-released: "2026-06-13"
+
+license: "MIT"
+
+repository-code: "https://github.com/sciencewithsaucee-sudo/Chess-Multiverse-Error-Explorer"
+
+url: "https://www.chessmultiverse.org/p/chess-multiverse-error-explorer.html"
+
+abstract: >
+  Chess Multiverse Error Explorer is a browser-native analytical platform
+  for large-scale research into human chess errors, cognitive collapse
+  under time pressure, opening complexity, evaluation-loss modeling,
+  and behavioral decision-making patterns. Built on the Chess Multiverse
+  Error & Evaluation Dataset (CMEED v1.0), the platform uses DuckDB WASM
+  to execute analytical SQL workloads entirely within the browser,
+  enabling reproducible computational chess research without requiring
+  backend infrastructure.
+
+keywords:
+  - Chess
+  - Chess Analytics
+  - Human Error Research
+  - Behavioral Science
+  - Computational Social Science
+  - Open Science
+  - DuckDB
+  - DuckDB WASM
+  - Reproducible Research
+  - Cognitive Performance
+  - Decision Making
+  - Chess Databases
+  - Time Pressure
+  - Sports Analytics
+
+preferred-citation:
+  type: software
+  authors:
+    - family-names: "Varshney"
+      given-names: "Sparsh"
+      orcid: "https://orcid.org/0009-0004-7835-0673"
+  title: "Chess Multiverse Error Explorer"
+  version: "1.0.0"
+  year: 2026
+  publisher: "GitHub"
+  repository-code: "https://github.com/sciencewithsaucee-sudo/Chess-Multiverse-Error-Explorer"
+
+references:
+  - type: dataset
+    authors:
+      - family-names: "Varshney"
+        given-names: "Sparsh"
+        orcid: "https://orcid.org/0009-0004-7835-0673"
+    title: "Chess Multiverse Error & Evaluation Dataset (CMEED v1.0)"
+    year: 2026
+    doi: "10.5281/zenodo.20625716"
+```
